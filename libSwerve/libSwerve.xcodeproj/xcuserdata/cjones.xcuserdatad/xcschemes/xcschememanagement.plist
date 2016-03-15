@@ -4,15 +4,25 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>libSwerve.xcscheme</key>
+		<key>libSwerve (Dynamic).xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>1</integer>
+		</dict>
+		<key>libSwerve (Static).xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>F98212711C98965D0086F948</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F98212B91C98CBCD0086F948</key>
 		<dict>
 			<key>primary</key>
 			<true/>

@@ -8,28 +8,31 @@
 
 import Foundation
 
-struct CJHttpMethod : OptionSetType {
-	let rawValue: Int
-	static let None = CJHttpMethod(rawValue: 0)
-	static let Get  = CJHttpMethod(rawValue: 1 << 0)
-	static let Post = CJHttpMethod(rawValue: 1 << 1)
+public struct CJHttpMethod: OptionSetType {
+	public let rawValue: Int
+	public init(rawValue: Int) { self.rawValue = rawValue }
+	public static let None = CJHttpMethod(rawValue: 0)
+	public static let Get  = CJHttpMethod(rawValue: 1 << 0)
+	public static let Post = CJHttpMethod(rawValue: 1 << 1)
 }
 
-typealias CJHttpServerResponseHandler = (CJHttpServerResponse) -> Void
-typealias CJHttpServerRequestPathEqualsHandler = (CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
-typealias CJHttpServerRequestPathLikeHandler = ([String], CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
+public typealias CJHttpServerResponseHandler = (CJHttpServerResponse) -> Void
+public typealias CJHttpServerRequestPathEqualsHandler = (CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
+public typealias CJHttpServerRequestPathLikeHandler = ([String], CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
 
-protocol CJHttpServerRequest {
+public protocol CJHttpServerRequest {
 	
 }
 
-protocol CJHttpServerResponse {
+public protocol CJHttpServerResponse {
 	
 }
 
-protocol CJHttpServer: CJServer {
+public protocol CJHttpServer: CJServer {
 	
-	func addHandler(method: CJHttpMethod, pathEqual: String, handler: CJHttpServerRequestPathEqualsHandler)
-	func addHandler(method: CJHttpMethod, pathLike: String, handler: CJHttpServerRequestPathLikeHandler)
+	init(port: Int16)
+	
+	mutating func addHandler(method: CJHttpMethod, pathEqual: String, handler: CJHttpServerRequestPathEqualsHandler)
+	mutating func addHandler(method: CJHttpMethod, pathLike: String, handler: CJHttpServerRequestPathLikeHandler)
 	
 }

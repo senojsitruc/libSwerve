@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F98212D41C98CD8A0086F948"
-               BuildableName = "Swerver.app"
-               BlueprintName = "Swerver"
-               ReferencedContainer = "container:Swerver.xcodeproj">
+               BlueprintIdentifier = "F98212B91C98CBCD0086F948"
+               BuildableName = "liblibSwerve (Static).a"
+               BlueprintName = "libSwerve (Static)"
+               ReferencedContainer = "container:libSwerve.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,15 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F98212D41C98CD8A0086F948"
-            BuildableName = "Swerver.app"
-            BlueprintName = "Swerver"
-            ReferencedContainer = "container:Swerver.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -51,16 +42,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F98212D41C98CD8A0086F948"
-            BuildableName = "Swerver.app"
-            BlueprintName = "Swerver"
-            ReferencedContainer = "container:Swerver.xcodeproj">
+            BlueprintIdentifier = "F98212B91C98CBCD0086F948"
+            BuildableName = "liblibSwerve (Static).a"
+            BlueprintName = "libSwerve (Static)"
+            ReferencedContainer = "container:libSwerve.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -70,16 +60,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F98212D41C98CD8A0086F948"
-            BuildableName = "Swerver.app"
-            BlueprintName = "Swerver"
-            ReferencedContainer = "container:Swerver.xcodeproj">
+            BlueprintIdentifier = "F98212B91C98CBCD0086F948"
+            BuildableName = "liblibSwerve (Static).a"
+            BlueprintName = "libSwerve (Static)"
+            ReferencedContainer = "container:libSwerve.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

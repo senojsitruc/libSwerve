@@ -8,15 +8,20 @@
 
 import Foundation
 
-struct CJSwerve {
+public struct CJSwerve {
 	
-	private let httpServerType = CJHttpServerImpl.self
+	private static let httpServerType = CJHttpServerImpl.self
+	private static let tcpListenerType = CJTcpListenerImpl.self
 	
-	init() {
+	public init() {
 	}
 	
-	func httpServer(port: Int16) -> CJHttpServer {
-		return httpServerType.init()
+	public static func httpServer(port: Int16) -> CJHttpServer {
+		return httpServerType.init(port: port)
+	}
+	
+	internal static func tcpListener(port port: Int16, acceptHandler: CJTcpListenerAcceptHandler) -> CJTcpListener {
+		return tcpListenerType.init(port: port, acceptHandler: acceptHandler)
 	}
 	
 }

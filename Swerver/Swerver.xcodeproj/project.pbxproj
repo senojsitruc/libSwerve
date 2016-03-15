@@ -7,8 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F982128A1C9896C00086F948 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212891C9896C00086F948 /* main.swift */; };
-		F982129F1C98987D0086F948 /* libSwerve.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F982129C1C9898700086F948 /* libSwerve.framework */; };
+		F98212D81C98CD8A0086F948 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212D71C98CD8A0086F948 /* AppDelegate.swift */; };
+		F98212DA1C98CD8A0086F948 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F98212D91C98CD8A0086F948 /* Assets.xcassets */; };
+		F98212DD1C98CD8A0086F948 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F98212DB1C98CD8A0086F948 /* MainMenu.xib */; };
+		F98212E51C98CE150086F948 /* libSwerve.framework in Resources */ = {isa = PBXBuildFile; fileRef = F982129C1C9898700086F948 /* libSwerve.framework */; };
+		F98212E61C98CE330086F948 /* libSwerve.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F982129C1C9898700086F948 /* libSwerve.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -19,40 +22,37 @@
 			remoteGlobalIDString = F98212721C98965D0086F948;
 			remoteInfo = libSwerve;
 		};
-		F982129D1C9898770086F948 /* PBXContainerItemProxy */ = {
+		F98212C41C98CBFE0086F948 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F98212971C9898700086F948 /* libSwerve.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F98212BA1C98CBCD0086F948;
+			remoteInfo = "libSwerve (Static)";
+		};
+		F98212E31C98CE0F0086F948 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F98212971C9898700086F948 /* libSwerve.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = F98212711C98965D0086F948;
-			remoteInfo = libSwerve;
+			remoteInfo = "libSwerve (Dynamic)";
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		F98212841C9896C00086F948 /* Copy Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			name = "Copy Files";
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		F98212861C9896C00086F948 /* Swerver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Swerver; sourceTree = BUILT_PRODUCTS_DIR; };
-		F98212891C9896C00086F948 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		F98212971C9898700086F948 /* libSwerve.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libSwerve.xcodeproj; path = ../libSwerve/libSwerve.xcodeproj; sourceTree = "<group>"; };
+		F98212D51C98CD8A0086F948 /* Swerver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Swerver.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F98212D71C98CD8A0086F948 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F98212D91C98CD8A0086F948 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F98212DC1C98CD8A0086F948 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		F98212DE1C98CD8A0086F948 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F98212831C9896C00086F948 /* Frameworks */ = {
+		F98212D21C98CD8A0086F948 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F982129F1C98987D0086F948 /* libSwerve.framework in Frameworks */,
+				F98212E61C98CE330086F948 /* libSwerve.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,8 +62,8 @@
 		F982127D1C9896C00086F948 = {
 			isa = PBXGroup;
 			children = (
+				F98212D61C98CD8A0086F948 /* Swerver */,
 				F98212961C9898650086F948 /* Frameworks */,
-				F98212881C9896C00086F948 /* Swerver */,
 				F98212871C9896C00086F948 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -71,17 +71,9 @@
 		F98212871C9896C00086F948 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F98212861C9896C00086F948 /* Swerver */,
+				F98212D51C98CD8A0086F948 /* Swerver.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F98212881C9896C00086F948 /* Swerver */ = {
-			isa = PBXGroup;
-			children = (
-				F98212891C9896C00086F948 /* main.swift */,
-			);
-			path = Swerver;
 			sourceTree = "<group>";
 		};
 		F98212961C9898650086F948 /* Frameworks */ = {
@@ -96,30 +88,50 @@
 			isa = PBXGroup;
 			children = (
 				F982129C1C9898700086F948 /* libSwerve.framework */,
+				F98212C51C98CBFE0086F948 /* liblibSwerve.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		F98212D61C98CD8A0086F948 /* Swerver */ = {
+			isa = PBXGroup;
+			children = (
+				F98212D71C98CD8A0086F948 /* AppDelegate.swift */,
+				F98212E21C98CDB80086F948 /* Resources */,
+			);
+			path = Swerver;
+			sourceTree = "<group>";
+		};
+		F98212E21C98CDB80086F948 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F98212D91C98CD8A0086F948 /* Assets.xcassets */,
+				F98212DB1C98CD8A0086F948 /* MainMenu.xib */,
+				F98212DE1C98CD8A0086F948 /* Info.plist */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F98212851C9896C00086F948 /* Swerver */ = {
+		F98212D41C98CD8A0086F948 /* Swerver */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F982128D1C9896C00086F948 /* Build configuration list for PBXNativeTarget "Swerver" */;
+			buildConfigurationList = F98212DF1C98CD8A0086F948 /* Build configuration list for PBXNativeTarget "Swerver" */;
 			buildPhases = (
-				F98212821C9896C00086F948 /* Sources */,
-				F98212831C9896C00086F948 /* Frameworks */,
-				F98212841C9896C00086F948 /* Copy Files */,
+				F98212D11C98CD8A0086F948 /* Sources */,
+				F98212D21C98CD8A0086F948 /* Frameworks */,
+				F98212D31C98CD8A0086F948 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F982129E1C9898770086F948 /* PBXTargetDependency */,
+				F98212E41C98CE0F0086F948 /* PBXTargetDependency */,
 			);
 			name = Swerver;
 			productName = Swerver;
-			productReference = F98212861C9896C00086F948 /* Swerver */;
-			productType = "com.apple.product-type.tool";
+			productReference = F98212D51C98CD8A0086F948 /* Swerver.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -131,7 +143,7 @@
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Symphonic Systems, Inc.";
 				TargetAttributes = {
-					F98212851C9896C00086F948 = {
+					F98212D41C98CD8A0086F948 = {
 						CreatedOnToolsVersion = 7.3;
 					};
 				};
@@ -142,6 +154,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = F982127D1C9896C00086F948;
 			productRefGroup = F98212871C9896C00086F948 /* Products */;
@@ -154,7 +167,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				F98212851C9896C00086F948 /* Swerver */,
+				F98212D41C98CD8A0086F948 /* Swerver */,
 			);
 		};
 /* End PBXProject section */
@@ -167,26 +180,57 @@
 			remoteRef = F982129B1C9898700086F948 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		F98212C51C98CBFE0086F948 /* liblibSwerve.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblibSwerve.a;
+			remoteRef = F98212C41C98CBFE0086F948 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
+/* Begin PBXResourcesBuildPhase section */
+		F98212D31C98CD8A0086F948 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F98212DA1C98CD8A0086F948 /* Assets.xcassets in Resources */,
+				F98212DD1C98CD8A0086F948 /* MainMenu.xib in Resources */,
+				F98212E51C98CE150086F948 /* libSwerve.framework in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		F98212821C9896C00086F948 /* Sources */ = {
+		F98212D11C98CD8A0086F948 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F982128A1C9896C00086F948 /* main.swift in Sources */,
+				F98212D81C98CD8A0086F948 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		F982129E1C9898770086F948 /* PBXTargetDependency */ = {
+		F98212E41C98CE0F0086F948 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = libSwerve;
-			targetProxy = F982129D1C9898770086F948 /* PBXContainerItemProxy */;
+			name = "libSwerve (Dynamic)";
+			targetProxy = F98212E31C98CE0F0086F948 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F98212DB1C98CD8A0086F948 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F98212DC1C98CD8A0086F948 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		F982128B1C9896C00086F948 /* Debug */ = {
@@ -271,16 +315,26 @@
 			};
 			name = Release;
 		};
-		F982128E1C9896C00086F948 /* Debug */ = {
+		F98212E01C98CD8A0086F948 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Swerver/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = us.curtisjones.Swerver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		F982128F1C9896C00086F948 /* Release */ = {
+		F98212E11C98CD8A0086F948 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = Swerver/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = us.curtisjones.Swerver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -297,14 +351,13 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F982128D1C9896C00086F948 /* Build configuration list for PBXNativeTarget "Swerver" */ = {
+		F98212DF1C98CD8A0086F948 /* Build configuration list for PBXNativeTarget "Swerver" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F982128E1C9896C00086F948 /* Debug */,
-				F982128F1C9896C00086F948 /* Release */,
+				F98212E01C98CD8A0086F948 /* Debug */,
+				F98212E11C98CD8A0086F948 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

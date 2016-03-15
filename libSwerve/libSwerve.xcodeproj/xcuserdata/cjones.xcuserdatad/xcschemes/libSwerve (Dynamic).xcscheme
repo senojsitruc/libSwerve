@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F98212711C98965D0086F948"
                BuildableName = "libSwerve.framework"
-               BlueprintName = "libSwerve"
+               BlueprintName = "libSwerve (Dynamic)"
                ReferencedContainer = "container:libSwerve.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,7 +47,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F98212711C98965D0086F948"
             BuildableName = "libSwerve.framework"
-            BlueprintName = "libSwerve"
+            BlueprintName = "libSwerve (Dynamic)"
             ReferencedContainer = "container:libSwerve.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,7 +65,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F98212711C98965D0086F948"
             BuildableName = "libSwerve.framework"
-            BlueprintName = "libSwerve"
+            BlueprintName = "libSwerve (Dynamic)"
             ReferencedContainer = "container:libSwerve.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
