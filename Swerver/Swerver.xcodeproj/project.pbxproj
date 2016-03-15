@@ -1,0 +1,312 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F982128A1C9896C00086F948 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212891C9896C00086F948 /* main.swift */; };
+		F982129F1C98987D0086F948 /* libSwerve.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F982129C1C9898700086F948 /* libSwerve.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F982129B1C9898700086F948 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F98212971C9898700086F948 /* libSwerve.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F98212721C98965D0086F948;
+			remoteInfo = libSwerve;
+		};
+		F982129D1C9898770086F948 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F98212971C9898700086F948 /* libSwerve.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F98212711C98965D0086F948;
+			remoteInfo = libSwerve;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		F98212841C9896C00086F948 /* Copy Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		F98212861C9896C00086F948 /* Swerver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Swerver; sourceTree = BUILT_PRODUCTS_DIR; };
+		F98212891C9896C00086F948 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		F98212971C9898700086F948 /* libSwerve.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libSwerve.xcodeproj; path = ../libSwerve/libSwerve.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F98212831C9896C00086F948 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F982129F1C98987D0086F948 /* libSwerve.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F982127D1C9896C00086F948 = {
+			isa = PBXGroup;
+			children = (
+				F98212961C9898650086F948 /* Frameworks */,
+				F98212881C9896C00086F948 /* Swerver */,
+				F98212871C9896C00086F948 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F98212871C9896C00086F948 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F98212861C9896C00086F948 /* Swerver */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F98212881C9896C00086F948 /* Swerver */ = {
+			isa = PBXGroup;
+			children = (
+				F98212891C9896C00086F948 /* main.swift */,
+			);
+			path = Swerver;
+			sourceTree = "<group>";
+		};
+		F98212961C9898650086F948 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				F98212971C9898700086F948 /* libSwerve.xcodeproj */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F98212981C9898700086F948 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F982129C1C9898700086F948 /* libSwerve.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F98212851C9896C00086F948 /* Swerver */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F982128D1C9896C00086F948 /* Build configuration list for PBXNativeTarget "Swerver" */;
+			buildPhases = (
+				F98212821C9896C00086F948 /* Sources */,
+				F98212831C9896C00086F948 /* Frameworks */,
+				F98212841C9896C00086F948 /* Copy Files */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F982129E1C9898770086F948 /* PBXTargetDependency */,
+			);
+			name = Swerver;
+			productName = Swerver;
+			productReference = F98212861C9896C00086F948 /* Swerver */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F982127E1C9896C00086F948 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0730;
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "Symphonic Systems, Inc.";
+				TargetAttributes = {
+					F98212851C9896C00086F948 = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = F98212811C9896C00086F948 /* Build configuration list for PBXProject "Swerver" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F982127D1C9896C00086F948;
+			productRefGroup = F98212871C9896C00086F948 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F98212981C9898700086F948 /* Products */;
+					ProjectRef = F98212971C9898700086F948 /* libSwerve.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				F98212851C9896C00086F948 /* Swerver */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F982129C1C9898700086F948 /* libSwerve.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = libSwerve.framework;
+			remoteRef = F982129B1C9898700086F948 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F98212821C9896C00086F948 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F982128A1C9896C00086F948 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F982129E1C9898770086F948 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libSwerve;
+			targetProxy = F982129D1C9898770086F948 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		F982128B1C9896C00086F948 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F982128C1C9896C00086F948 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		F982128E1C9896C00086F948 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		F982128F1C9896C00086F948 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F98212811C9896C00086F948 /* Build configuration list for PBXProject "Swerver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F982128B1C9896C00086F948 /* Debug */,
+				F982128C1C9896C00086F948 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F982128D1C9896C00086F948 /* Build configuration list for PBXNativeTarget "Swerver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F982128E1C9896C00086F948 /* Debug */,
+				F982128F1C9896C00086F948 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F982127E1C9896C00086F948 /* Project object */;
+}
