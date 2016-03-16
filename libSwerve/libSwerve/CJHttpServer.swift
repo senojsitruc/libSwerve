@@ -11,7 +11,7 @@ import Foundation
 public struct CJHttpMethod: OptionSetType {
 	public let rawValue: Int
 	public init(rawValue: Int) { self.rawValue = rawValue }
-	public static let None = CJHttpMethod(rawValue: 0)
+	public static let None = CJHttpMethod(rawValue:      0)
 	public static let Get  = CJHttpMethod(rawValue: 1 << 0)
 	public static let Post = CJHttpMethod(rawValue: 1 << 1)
 }
@@ -19,65 +19,33 @@ public struct CJHttpMethod: OptionSetType {
 public typealias CJHttpServerResponseHandler = (CJHttpServerResponse) -> Void
 public typealias CJHttpServerRequestPathEqualsHandler = (CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
 public typealias CJHttpServerRequestPathLikeHandler = ([String], CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
-
-//public protocol CJHttpConnection {
-//	
-//	init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t)
-//	
-//}
-
-//public class CJHttpConnection: Hashable {
-//	
-//	public var hashValue: Int { return (remoteAddr + ":\(remotePort)").hashValue }
-//	
-//	let sockfd: Int32
-//	let soaddr: sockaddr_in
-//	let remoteAddr: String
-//	let remotePort: UInt16
-//	
-//	init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t) {
-//		self.sockfd = sockfd
-//		self.soaddr = soaddr
-//		self.remoteAddr = CJAddrToString(soaddr.sin_addr, family: soaddr.sin_family) ?? ""
-//		self.remotePort = soaddr.sin_port
-//	}
-//	
-//}
-//
-//public func ==(lhs: CJHttpConnection, rhs: CJHttpConnection) -> Bool { return lhs.hashValue == rhs.hashValue }
-
-//public class CJHttpConnection {
-//	
-//	let connection: CJConnection
-//	
-//	init(connection: CJConnection) {
-//		self.connection = connection
-//	}
-//	
-//}
-
 public typealias CJHttpConnectionRequestHandler = (CJHttpConnection, CJHttpServerRequest) -> Void
+
+public struct CJHttpHeader {
+	var name: String
+	var values = [String]()
+	var value: String? { return values.first }
+	
+	init(headerString: String) {
+		name = ""
+		
+		// TODO: parse header string
+		
+	}
+}
 
 public protocol CJHttpConnection {
 	
 	init(connection: CJConnection, requestHandler: CJHttpConnectionRequestHandler)
 	
-//	var connection: CJConnection { get }
-//	var requestHandler: ((CJHttpRequest) -> Void) { get set }
-	
 }
 
-//public struct CJHttpConnection: CJHttpConnectionProtocol {
-//	
-//	public var hashValue: Int = 0
-//	
-//	public init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t) { }
-//	
-//}
-//
-//public func ==(lhs: CJHttpConnection, rhs: CJHttpConnection) -> Bool { return lhs.hashValue == rhs.hashValue }
-
 public protocol CJHttpServerRequest {
+	
+//	func readJsonObject() -> AnyObject?
+//	func readXmlObject() -> AnyObject?
+//	func readDataObject() -> AnyObject?
+//	func readStringObject() -> AnyObject?
 	
 }
 

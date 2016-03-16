@@ -18,12 +18,18 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 	
 	let sockfd: Int32
 	let soaddr: sockaddr_in
+	let queue: dispatch_queue_t
 	let remoteAddr: String
 	let remotePort: UInt16
+	
+	private var stop = false
+	private var tmpdata: dispatch_data_t = dispatch_data_create(nil, 0, nil, nil)
+	private var bytesIn: size_t = 0
 	
 	required init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t) {
 		self.sockfd = sockfd
 		self.soaddr = soaddr
+		self.queue = queue
 		self.remoteAddr = CJAddrToString(soaddr.sin_addr, family: soaddr.sin_family) ?? ""
 		self.remotePort = soaddr.sin_port
 		self.indata = dispatch_data_create(nil, 0, nil, nil)
@@ -32,15 +38,39 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 			
 		}
 		
+		DLog("\(remoteAddr):\(remotePort) :: Incoming connection established.")
+	}
+	
+	func open() {
 		dispatch_io_set_low_water(channel, 1)
 		
 		dispatch_io_set_interval(channel, 10000000000, DISPATCH_IO_STRICT_INTERVAL)
 		
-		dispatch_io_read(channel, 0, Int.max, queue) { [remoteAddr, remotePort] done, data, error in
+		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, remoteAddr, remotePort] done, data, error in
 			DLog("\(remoteAddr):\(remotePort) :: read bytes = \(dispatch_data_get_size(data))")
+			
+			guard let _self = self else { return }
+			
+			// check for a stop signal
+			if _self.stop == true { return }
+			
+			// enumerate the memory regions of the data buffer. the handler will tell us how many bytes it
+			// has consumed and we'll subrange() them off the front when we're done
+			if let data = data, handler = _self.readHandler {
+				var totalUsed = 0
+				
+				_self.bytesIn += dispatch_data_get_size(data)
+				_self.tmpdata = dispatch_data_create_concat(_self.tmpdata, data)
+				
+				dispatch_data_apply(_self.tmpdata) { region, offset, buffer, size in
+					let used = handler(buffer, size)
+					totalUsed += used
+					return used == size
+				}
+				
+				_self.tmpdata = dispatch_data_create_subrange(_self.tmpdata, totalUsed, dispatch_data_get_size(_self.tmpdata) - totalUsed)
+			}
 		}
-		
-		DLog("\(remoteAddr):\(remotePort) :: Incoming connection established.")
 	}
 	
 	func write() {
@@ -48,16 +78,14 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 	}
 	
 	func close() {
-		
+		stop = true
 	}
 	
 }
 
-//public class CJTcpServer {
-//	
-//	var serverStatus = CJServerStatus.None
-//	
-//}
+
+
+
 
 private class Connection: Hashable {
 	
@@ -95,10 +123,12 @@ internal class CJTcpServerImpl: CJSocketServer {
 	}
 	
 	func start() throws {
-		let acceptHandler: CJSocketListenerAcceptHandler = { [socketQueue] sockfd, soaddr in
+		let acceptHandler: CJSocketListenerAcceptHandler = { [weak self, socketQueue] sockfd, soaddr in
 			let tcpConnection = CJSwerve.tcpConnectionType.init(sockfd: sockfd, soaddr: soaddr, queue: socketQueue)
 			let connection = Connection(connection: tcpConnection)
-			self.connections.insert(connection)
+			self?.connections.insert(connection)
+			self?.acceptHandler?(tcpConnection)
+			tcpConnection.open()
 		}
 		
 		var listener = CJSwerve.tcpListenerType.init(port: serverPort, acceptHandler: acceptHandler)
