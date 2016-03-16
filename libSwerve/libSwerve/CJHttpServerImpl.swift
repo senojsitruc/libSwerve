@@ -70,7 +70,39 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 
 
 
-private struct Response: CJHttpServerResponse {
+internal class CJHttpServerResponseImpl: CJHttpServerResponse {
+	
+	var headers = [String: CJHttpHeader]()
+	
+	private var firstWrite = true
+	private let connection: CJHttpConnection
+	
+	required init(connection: CJHttpConnection) {
+		self.connection = connection
+	}
+	
+	func write(bytes: UnsafePointer<Void>, size: Int) {
+		if firstWrite == true {
+			firstWrite = false
+			writeHeaders()
+		}
+		
+		connection.write(bytes, size: size)
+	}
+	
+	func finish() {
+		connection.resumeAfterWrites()
+	}
+	
+	private final func writeHeaders() {
+		connection.write("HTTP/1.1 200 OK\r\n")
+		
+		headers.forEach { _, header in
+			connection.write(header.makeHeaderString())
+		}
+		
+		connection.write("\r\n")
+	}
 	
 }
 
@@ -80,7 +112,7 @@ private struct Response: CJHttpServerResponse {
 
 private protocol Handler {
 	
-	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest) -> Bool
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool
 	
 }
 
@@ -90,8 +122,8 @@ private struct PathEqualsHandler: Handler {
 	let path: String
 	let handler: CJHttpServerRequestPathEqualsHandler
 	
-	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest) -> Bool {
-		handler(request) { response in }
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool {
+		handler(request, response)
 		return true
 	}
 	
@@ -103,7 +135,7 @@ private struct PathLikeHandler: Handler {
 	let path: String
 	let handler: CJHttpServerRequestPathLikeHandler
 	
-	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest) -> Bool {
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool {
 		return false
 	}
 	
@@ -131,16 +163,21 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 			// concatenate any buffered data with this new data
 			_self.tmpdata += String(CString: UnsafePointer<CChar>(data), encoding: NSUTF8StringEncoding) ?? ""
 			
+			DLog("tmpdata = \(_self.tmpdata)")
+			
 			// we'll update this index as we run through the string instead of repeatedly substring()'ing
 			var startIndex = _self.tmpdata.startIndex
 			
-			while (true) {
+			// parse a single request, up to the limits of our buffered data
+			while (startIndex < _self.tmpdata.endIndex) {
 				///
 				/// Preface | GET /test.php HTTP/1.1\r\n
 				///
 				if _self.connectionState == .None {
 					// get the next newline (if any); return if we can't find one
-					guard let nlrange = _self.tmpdata.rangeOfString("\r\n", options: NSStringCompareOptions(rawValue: 0), range: Range<String.Index>(startIndex..<_self.tmpdata.endIndex), locale: nil) else { break }
+					guard let nlrange = _self.tmpdata.rangeOfString("\r\n", options: NSStringCompareOptions(rawValue: 0), range: Range<String.Index>(startIndex..<_self.tmpdata.endIndex), locale: nil) else {
+						break
+					}
 					
 					// get the first line
 					let line = _self.tmpdata.substringWithRange(Range<String.Index>(startIndex..<nlrange.startIndex))
@@ -170,7 +207,9 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 				///
 				else if _self.connectionState == .Header {
 					// get the next newline (if any); return if we can't find one
-					guard let nlrange = _self.tmpdata.rangeOfString("\r\n", options: NSStringCompareOptions(rawValue: 0), range: Range<String.Index>(startIndex..<_self.tmpdata.endIndex), locale: nil) else { break }
+					guard let nlrange = _self.tmpdata.rangeOfString("\r\n", options: NSStringCompareOptions(rawValue: 0), range: Range<String.Index>(startIndex..<_self.tmpdata.endIndex), locale: nil) else {
+						break
+					}
 					
 					// get the first line
 					let line = _self.tmpdata.substringWithRange(Range<String.Index>(startIndex..<nlrange.startIndex))
@@ -179,33 +218,53 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 					startIndex = nlrange.endIndex
 					
 					// we got a blank line; advance to the body (if any)
-					if line.isEmpty == true { _self.connectionState = .Done; continue }
+					if line.isEmpty == true {
+						_self.connectionState = .Done
+						break
+					}
 					
 					// save the header without parsing it further
 					_self.request?.addHeader(CJHttpHeader(headerString: line))
 				}
-				
+					
 				///
 				/// Body |
 				///
 				else if _self.connectionState == .Body {
 					break
 				}
-				
-				///
-				/// Done |
-				///
-				else if _self.connectionState == .Done {
-					_self.requestHandler(_self, _self.request!)
-					_self.request = nil
-					break
-				}
 			}
 			
+			///
+			/// Done |
+			///
+			if _self.connectionState == .Done {
+				_self.connectionState = .None
+				_self.connection.pause()
+				_self.requestHandler(_self, _self.request!)
+				_self.request = nil
+			}
+		
 			_self.tmpdata = _self.tmpdata.substringFromIndex(startIndex)
 			
 			return leng
 		}
+	}
+	
+	func close() {
+		connection.close()
+	}
+	
+	func resume() {
+		connection.resume(waitForWrites: false)
+	}
+	
+	func write(bytes: UnsafePointer<Void>, size: Int) {
+		connection.write(bytes, size: size, completionHandler: nil)
+	}
+	
+	func resumeAfterWrites() {
+		connection.resume(waitForWrites: true)
 	}
 	
 }
@@ -230,8 +289,17 @@ internal class CJHttpServerImpl: CJHttpServer {
 			
 			defer { CJDispatchMain() { completionHandler(success, nserror) } }
 			
-			let requestHandler: CJHttpConnectionRequestHandler = { connection, request in
-				self.handlers.first?.matches(connection, request)
+			let requestHandler: CJHttpConnectionRequestHandler = { [weak self] connection, request in
+				var matched = false
+				let response = CJSwerve.httpResponseType.init(connection: connection)
+				
+				for handler in self?.handlers ?? [] {
+					if handler.matches(connection, request, response) == true { matched = true; break }
+				}
+				
+				if matched == false {
+					connection.close()
+				}
 			}
 			
 			// link new connections to http connection objects

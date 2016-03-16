@@ -358,6 +358,7 @@
 				F98212E11C98CD8A0086F948 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

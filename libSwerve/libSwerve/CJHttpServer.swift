@@ -17,8 +17,9 @@ public struct CJHttpMethod: OptionSetType {
 }
 
 public typealias CJHttpServerResponseHandler = (CJHttpServerResponse) -> Void
-public typealias CJHttpServerRequestPathEqualsHandler = (CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
-public typealias CJHttpServerRequestPathLikeHandler = ([String], CJHttpServerRequest, CJHttpServerResponseHandler) -> Void
+public typealias CJHttpServerResponseDataSourceHandler = (inout Bool) -> NSData?
+public typealias CJHttpServerRequestPathEqualsHandler = (CJHttpServerRequest, CJHttpServerResponse) -> Void
+public typealias CJHttpServerRequestPathLikeHandler = ([String], CJHttpServerRequest, CJHttpServerResponse) -> Void
 public typealias CJHttpConnectionRequestHandler = (CJHttpConnection, CJHttpServerRequest) -> Void
 
 public struct CJHttpHeader {
@@ -51,13 +52,49 @@ public struct CJHttpHeader {
 	
 	mutating func mergeHeader(header: CJHttpHeader) { values += header.values }
 	
-	func description() -> String { return "CJHttpHeader::{ name=\(name), values=\(values) }" }
+	func makeHeaderString() -> String {
+		var string = name + ": "
+		
+		for (index, value) in values.enumerate() {
+			string += value
+			
+			if index < values.endIndex.predecessor() {
+				string += "; "
+			}
+		}
+		
+		string += "\r\n"
+		
+		return string
+	}
 	
 }
 
 public protocol CJHttpConnection {
 	
 	init(connection: CJConnection, requestHandler: CJHttpConnectionRequestHandler)
+	
+	func close()
+	func resume()
+	func resumeAfterWrites()
+	
+	func write(bytes: UnsafePointer<Void>, size: Int)
+	func write(data: NSData)
+	func write(string: String)
+	
+}
+
+extension CJHttpConnection {
+	
+	func write(data: NSData) {
+		write(data.bytes, size: data.length)
+	}
+	
+	func write(string: String) {
+		if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
+			write(data)
+		}
+	}
 	
 }
 
@@ -109,6 +146,47 @@ extension CJHttpServerRequest {
 }
 
 public protocol CJHttpServerResponse {
+	
+	var headers: [String: CJHttpHeader] { get set }
+	
+	init(connection: CJHttpConnection)
+	
+	mutating func addHeader(header: CJHttpHeader)
+	mutating func addHeader(name: String, value: AnyObject)
+	
+	func write(bytes: UnsafePointer<Void>, size: Int)
+	func write(data: NSData)
+	func write(string: String)
+	
+	func finish()
+	
+}
+
+extension CJHttpServerResponse {
+	
+	mutating func addHeader(header: CJHttpHeader) {
+		guard var existingHeader = headers[header.name] else {
+			headers[header.name] = header
+			return
+		}
+		
+		existingHeader.mergeHeader(header)
+		headers[header.name] = existingHeader
+	}
+	
+	mutating func addHeader(name: String, value: AnyObject) {
+		addHeader(CJHttpHeader(name: name, value: "\(value)"))
+	}
+	
+	func write(data: NSData) {
+		write(data.bytes, size: data.length)
+	}
+	
+	func write(string: String) {
+		if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
+			write(data)
+		}
+	}
 	
 }
 

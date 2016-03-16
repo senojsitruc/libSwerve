@@ -25,10 +25,28 @@ public protocol CJConnection {
 	
 	func open()
 	func close()
-	func write()
+	func pause()
+	func resume(waitForWrites waitForWrites: Bool)
+	
+	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?)
+	func write(data: NSData, completionHandler: ((Bool) -> Void)?)
+	func write(string: String, completionHandler: ((Bool) -> Void)?)
 	
 }
 
+extension CJConnection {
+	
+	func write(data: NSData, completionHandler: ((Bool) -> Void)?) {
+		write(data.bytes, size: data.length, completionHandler: completionHandler)
+	}
+	
+	func write(string: String, completionHandler: ((Bool) -> Void)?) {
+		if let data = string.dataUsingEncoding(NSUTF8StringEncoding) {
+			write(data, completionHandler: completionHandler)
+		}
+	}
+	
+}
 public typealias CJConnectionReadHandler = (UnsafePointer<Void>, Int) -> Int
 
 public typealias CJServerAcceptHandler = (CJConnection) -> Void

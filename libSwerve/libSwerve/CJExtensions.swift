@@ -25,7 +25,7 @@ internal func cjstrerror() -> String? {
 	return String.fromCString(strerror(errno))
 }
 
-internal func CJDispatchMain (async: Bool = true, _ block: () -> Void) {
+public func CJDispatchMain (async: Bool = true, _ block: () -> Void) {
 	if async == true {
 		dispatch_async(dispatch_get_main_queue(), block)
 	}
@@ -34,7 +34,7 @@ internal func CJDispatchMain (async: Bool = true, _ block: () -> Void) {
 	}
 }
 
-internal func CJDispatchBackground(async: Bool = true, _ block: () -> Void) {
+public func CJDispatchBackground(async: Bool = true, _ block: () -> Void) {
 	if async == true {
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block)
 	}

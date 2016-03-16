@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F98212B91C98CBCD0086F948"
-               BuildableName = "liblibSwerve (Static).a"
+               BuildableName = "liblibSwerve.a"
                BlueprintName = "libSwerve (Static)"
                ReferencedContainer = "container:libSwerve.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F98212B91C98CBCD0086F948"
-            BuildableName = "liblibSwerve (Static).a"
+            BuildableName = "liblibSwerve.a"
             BlueprintName = "libSwerve (Static)"
             ReferencedContainer = "container:libSwerve.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F98212B91C98CBCD0086F948"
-            BuildableName = "liblibSwerve (Static).a"
+            BuildableName = "liblibSwerve.a"
             BlueprintName = "libSwerve (Static)"
             ReferencedContainer = "container:libSwerve.xcodeproj">
          </BuildableReference>
