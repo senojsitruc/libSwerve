@@ -10,18 +10,11 @@ import Foundation
 
 public struct CJSwerve {
 	
-	private static let httpServerType = CJHttpServerImpl.self
-	private static let tcpListenerType = CJTcpListenerImpl.self
+	public static var httpServerType: CJHttpServer.Type = CJHttpServerImpl.self
+	public static var httpConnectionType: CJHttpConnection.Type = CJHttpConnectionImpl.self
 	
-	public init() {
-	}
-	
-	public static func httpServer(port: Int16) -> CJHttpServer {
-		return httpServerType.init(port: port)
-	}
-	
-	internal static func tcpListener(port port: Int16, acceptHandler: CJTcpListenerAcceptHandler) -> CJTcpListener {
-		return tcpListenerType.init(port: port, acceptHandler: acceptHandler)
-	}
+	public static var tcpServerType: CJSocketServer.Type = CJTcpServerImpl.self
+	public static var tcpListenerType: CJSocketListener.Type = CJTcpListenerImpl.self
+	public static var tcpConnectionType: CJSocketConnection.Type = CJTcpConnectionImpl.self
 	
 }

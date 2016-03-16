@@ -17,20 +17,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	var server: CJHttpServer!
 
 	func applicationDidFinishLaunching(aNotification: NSNotification) {
-		var server = CJSwerve.httpServer(8080)
+		let tcpServer = CJSwerve.tcpServerType.init(port: 8080)
+		var httpServer = CJSwerve.httpServerType.init(server: tcpServer)
 		
-		server.addHandler(.Get, pathEqual: "/") { request, responseHandler in
+		httpServer.addHandler(.Get, pathEquals: "/") { request, responseHandler in
 			DLog("request = \(request)")
 		}
 		
-		server.start() { success, error in
+		httpServer.start() { success, error in
 			DLog("success = \(success), error = \(error?.localizedDescription)")
-			self.server = server
+			self.server = httpServer
 		}
+		
+		server = httpServer
 	}
 
-	func applicationWillTerminate(aNotification: NSNotification) {
-	}
+	func applicationWillTerminate(aNotification: NSNotification) { }
 	
 	func applicationShouldTerminate(sender: NSApplication) -> NSApplicationTerminateReply {
 		server?.stop() { success, error in

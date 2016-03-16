@@ -13,7 +13,6 @@
 		F98212A51C989B1A0086F948 /* CJHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A41C989B1A0086F948 /* CJHttpServer.swift */; };
 		F98212AA1C989ED20086F948 /* CJServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A91C989ED20086F948 /* CJServerImpl.swift */; };
 		F98212AC1C98A03B0086F948 /* CJServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212AB1C98A03B0086F948 /* CJServer.swift */; };
-		F98212AF1C98AC2C0086F948 /* CJListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212AE1C98AC2C0086F948 /* CJListener.swift */; };
 		F98212B11C98AD6C0086F948 /* CJTcpListenerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */; };
 		F98212B41C98B4940086F948 /* CJExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212B31C98B4940086F948 /* CJExtensions.swift */; };
 		F98212C91C98CC4B0086F948 /* CJSwerve.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A01C9898E00086F948 /* CJSwerve.swift */; };
@@ -22,8 +21,11 @@
 		F98212CC1C98CC4B0086F948 /* CJTcpListenerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */; };
 		F98212CD1C98CC4B0086F948 /* CJServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212AB1C98A03B0086F948 /* CJServer.swift */; };
 		F98212CE1C98CC4B0086F948 /* CJHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A41C989B1A0086F948 /* CJHttpServer.swift */; };
-		F98212CF1C98CC4B0086F948 /* CJListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212AE1C98AC2C0086F948 /* CJListener.swift */; };
 		F98212D01C98CC4B0086F948 /* CJExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212B31C98B4940086F948 /* CJExtensions.swift */; };
+		F98212E81C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */; };
+		F98212E91C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */; };
+		F98212EB1C990F2C0086F948 /* CJSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212EA1C990F2C0086F948 /* CJSocketServer.swift */; };
+		F98212EC1C990F2C0086F948 /* CJSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212EA1C990F2C0086F948 /* CJSocketServer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,10 +37,11 @@
 		F98212A41C989B1A0086F948 /* CJHttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJHttpServer.swift; sourceTree = "<group>"; };
 		F98212A91C989ED20086F948 /* CJServerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJServerImpl.swift; sourceTree = "<group>"; };
 		F98212AB1C98A03B0086F948 /* CJServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJServer.swift; sourceTree = "<group>"; };
-		F98212AE1C98AC2C0086F948 /* CJListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJListener.swift; sourceTree = "<group>"; };
 		F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTcpListenerImpl.swift; sourceTree = "<group>"; };
 		F98212B31C98B4940086F948 /* CJExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJExtensions.swift; sourceTree = "<group>"; };
 		F98212BA1C98CBCD0086F948 /* liblibSwerve.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibSwerve.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTcpServerImpl.swift; sourceTree = "<group>"; };
+		F98212EA1C990F2C0086F948 /* CJSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJSocketServer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,7 +96,7 @@
 			children = (
 				F98212AB1C98A03B0086F948 /* CJServer.swift */,
 				F98212A41C989B1A0086F948 /* CJHttpServer.swift */,
-				F98212AE1C98AC2C0086F948 /* CJListener.swift */,
+				F98212EA1C990F2C0086F948 /* CJSocketServer.swift */,
 			);
 			name = Interface;
 			sourceTree = "<group>";
@@ -104,6 +107,7 @@
 				F98212A91C989ED20086F948 /* CJServerImpl.swift */,
 				F98212A21C989A820086F948 /* CJHttpServerImpl.swift */,
 				F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */,
+				F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */,
 			);
 			name = Impl;
 			sourceTree = "<group>";
@@ -235,10 +239,11 @@
 				F98212A31C989A820086F948 /* CJHttpServerImpl.swift in Sources */,
 				F98212B41C98B4940086F948 /* CJExtensions.swift in Sources */,
 				F98212B11C98AD6C0086F948 /* CJTcpListenerImpl.swift in Sources */,
+				F98212E81C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */,
 				F98212AC1C98A03B0086F948 /* CJServer.swift in Sources */,
 				F98212A51C989B1A0086F948 /* CJHttpServer.swift in Sources */,
-				F98212AF1C98AC2C0086F948 /* CJListener.swift in Sources */,
 				F98212AA1C989ED20086F948 /* CJServerImpl.swift in Sources */,
+				F98212EB1C990F2C0086F948 /* CJSocketServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,10 +255,11 @@
 				F98212CA1C98CC4B0086F948 /* CJServerImpl.swift in Sources */,
 				F98212CB1C98CC4B0086F948 /* CJHttpServerImpl.swift in Sources */,
 				F98212CC1C98CC4B0086F948 /* CJTcpListenerImpl.swift in Sources */,
+				F98212E91C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */,
 				F98212CD1C98CC4B0086F948 /* CJServer.swift in Sources */,
 				F98212CE1C98CC4B0086F948 /* CJHttpServer.swift in Sources */,
-				F98212CF1C98CC4B0086F948 /* CJListener.swift in Sources */,
 				F98212D01C98CC4B0086F948 /* CJExtensions.swift in Sources */,
+				F98212EC1C990F2C0086F948 /* CJSocketServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

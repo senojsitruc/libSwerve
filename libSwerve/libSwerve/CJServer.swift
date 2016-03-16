@@ -18,12 +18,58 @@ public struct CJServerStatus: OptionSetType {
 	static let Stopped  = CJServerStatus(rawValue: 4 << 0)
 }
 
+public protocol CJConnection {
+	
+	var context: Any? { get set }
+	var readHandler: CJConnectionReadHandler? { get set }
+	
+	func write()
+	func close()
+	
+}
+
+public typealias CJConnectionReadHandler = () -> Void
+
+//public class CJConnection {
+//	
+//	var context: Any?
+//	var readHandler: CJConnectionReadHandler?
+//	
+//	func close() { }
+////func read() { }
+//	func write() { }
+//	
+//}
+
+//public class CJHttpConnection: Hashable {
+//	
+//	public var hashValue: Int { return (remoteAddr + ":\(remotePort)").hashValue }
+//	
+//	let sockfd: Int32
+//	let soaddr: sockaddr_in
+//	let remoteAddr: String
+//	let remotePort: UInt16
+//	
+//	init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t) {
+//		self.sockfd = sockfd
+//		self.soaddr = soaddr
+//		self.remoteAddr = CJAddrToString(soaddr.sin_addr, family: soaddr.sin_family) ?? ""
+//		self.remotePort = soaddr.sin_port
+//	}
+//	
+//}
+//
+//public func ==(lhs: CJHttpConnection, rhs: CJHttpConnection) -> Bool { return lhs.hashValue == rhs.hashValue }
+
+public typealias CJServerAcceptHandler = (CJConnection) -> Void
+
 public protocol CJServer {
 	
 	var serverStatus: CJServerStatus { get }
+	var acceptHandler: CJServerAcceptHandler? { get set }
 	
-	mutating func start(completionHandler: (Bool, NSError?) -> Void)
-	mutating func stop(completionHandler: (Bool, NSError?) -> Void)
+	mutating func start() throws
+	mutating func stop() throws
 	
 }
 

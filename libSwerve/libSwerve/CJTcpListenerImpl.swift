@@ -11,17 +11,17 @@ import Foundation
 private func sockaddr_cast(p: UnsafePointer<sockaddr_in>) -> UnsafePointer<sockaddr> { return UnsafePointer<sockaddr>(p) }
 private func sockaddr_castm(p: UnsafePointer<sockaddr_in>) -> UnsafeMutablePointer<sockaddr> { return UnsafeMutablePointer<sockaddr>(p) }
 
-internal struct CJTcpListenerImpl: CJTcpListener {
+internal struct CJTcpListenerImpl: CJSocketListener {
 	
-	private let port: Int16
-	private let acceptHandler: CJTcpListenerAcceptHandler
+	private let port: UInt16
+	private let acceptHandler: CJSocketListenerAcceptHandler
 	private let queue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpListenerImpl.queue", DISPATCH_QUEUE_SERIAL)
 	
 	private var sockfd: Int32 = 0
 	private var soaddr: sockaddr_in?
 	private var source: dispatch_source_t!
 	
-	init(port: Int16, acceptHandler: CJTcpListenerAcceptHandler) {
+	init(port: UInt16, acceptHandler: CJSocketListenerAcceptHandler) {
 		self.port = port
 		self.acceptHandler = acceptHandler
 	}
