@@ -22,12 +22,25 @@ public func DLog(message: String?, file: String = #file, line: Int = #line, func
 }
 
 internal func cjstrerror() -> String? {
-	let cstring = strerror(errno)
-	let strleng = Int(strlen(cstring))
-	let data = NSData(bytesNoCopy: cstring, length: strleng)
-	let errstr = String(data: data, encoding: NSUTF8StringEncoding)
-	
-	return errstr
+	return String.fromCString(strerror(errno))
+}
+
+internal func CJDispatchMain (async: Bool = true, _ block: () -> Void) {
+	if async == true {
+		dispatch_async(dispatch_get_main_queue(), block)
+	}
+	else {
+		dispatch_sync(dispatch_get_main_queue(), block)
+	}
+}
+
+internal func CJDispatchBackground(async: Bool = true, _ block: () -> Void) {
+	if async == true {
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block)
+	}
+	else {
+		dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block)
+	}
 }
 
 extension NSError {

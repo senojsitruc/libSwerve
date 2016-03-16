@@ -14,7 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 	@IBOutlet weak var window: NSWindow!
 	
-	var server: CJSwerve!
+	var server: CJHttpServer!
 
 	func applicationDidFinishLaunching(aNotification: NSNotification) {
 		var server = CJSwerve.httpServer(8080)
@@ -25,13 +25,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		
 		server.start() { success, error in
 			DLog("success = \(success), error = \(error?.localizedDescription)")
+			self.server = server
 		}
 	}
 
 	func applicationWillTerminate(aNotification: NSNotification) {
-		// Insert code here to tear down your application
 	}
-
-
+	
+	func applicationShouldTerminate(sender: NSApplication) -> NSApplicationTerminateReply {
+		server?.stop() { success, error in
+			DLog("success = \(success), error = \(error?.localizedDescription)")
+			sender.replyToApplicationShouldTerminate(true)
+		}
+		
+		return .TerminateLater
+	}
+	
 }
-

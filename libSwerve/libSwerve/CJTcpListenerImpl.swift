@@ -34,24 +34,15 @@ internal struct CJTcpListenerImpl: CJTcpListener {
 		
 		// create the socket
 		let sockfd = socket(AF_INET, SOCK_STREAM, 0)
-		if sockfd == -1 {
-			throw NSError(description: cjstrerror())
-//		throw CJTcpListenerErrorType.SocketFailed(cjstrerror())
-		}
+		if sockfd == -1 { throw NSError(description: cjstrerror()) }
 		
 		// make the socket reusable
 		status = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuse, socklen_t(sizeof(Int32)))
-		if status == -1 {
-			throw NSError(description: cjstrerror())
-//		throw CJTcpListenerErrorType.SetSockOpt(cjstrerror())
-		}
+		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		// do not queue up outgoing data on the socket
 		status = setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &nodelay, socklen_t(sizeof(Int32)))
-		if status == -1 {
-			throw NSError(description: cjstrerror())
-//		throw CJTcpListenerErrorType.SetSockOpt(cjstrerror())
-		}
+		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		// configure the sockaddr
 		soaddr.sin_family = sa_family_t(AF_INET)
@@ -60,17 +51,11 @@ internal struct CJTcpListenerImpl: CJTcpListener {
 		
 		// bind to the local port
 		status = bind(sockfd, sockaddr_cast(&soaddr), socklen_t(sizeof(sockaddr_in)))
-		if status == -1 {
-			throw NSError(description: cjstrerror())
-//		throw CJTcpListenerErrorType.Bind(cjstrerror())
-		}
+		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		// listen
 		status = listen(sockfd, 100)
-		if status == -1 {
-			throw NSError(description: cjstrerror())
-//		throw CJTcpListenerErrorType.Listen(cjstrerror())
-		}
+		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		self.sockfd = sockfd
 		self.soaddr = soaddr
@@ -80,10 +65,7 @@ internal struct CJTcpListenerImpl: CJTcpListener {
 			var addr = sockaddr_in()
 			var alen = socklen_t(sizeof(sockaddr_in))
 			let sock = accept(sockfd, sockaddr_castm(&addr), &alen)
-			
-			if sock > 0 {
-				self.acceptHandler(sock, addr)
-			}
+			if sock > 0 { self.acceptHandler(sock, addr) }
 		}
 		
 		dispatch_resume(source)

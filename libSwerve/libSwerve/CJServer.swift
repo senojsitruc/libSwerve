@@ -26,3 +26,15 @@ public protocol CJServer {
 	mutating func stop(completionHandler: (Bool, NSError?) -> Void)
 	
 }
+
+///
+/// http://codereview.stackexchange.com/questions/71861/pure-swift-solution-for-socket-programming
+///
+internal func CJAddrToString(addr: in_addr, family: sa_family_t) -> String? {
+	var addrstr = [CChar](count:Int(INET_ADDRSTRLEN), repeatedValue: 0)
+	var addr = addr
+	
+	inet_ntop(Int32(family), &addr, &addrstr, socklen_t(INET6_ADDRSTRLEN))
+	
+	return String.fromCString(addrstr)
+}

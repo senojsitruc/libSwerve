@@ -28,9 +28,31 @@ private struct Connection: Hashable {
 	
 	var hashValue: Int { return (remoteAddr + ":\(remotePort)").hashValue }
 	
-	let socket: Int
+	let channel: dispatch_io_t
+	let indata: dispatch_data_t
+	
+	let sockfd: Int
+	let soaddr: sockaddr_in
 	let remoteAddr: String
-	let remotePort: Int16
+	let remotePort: UInt16
+	
+	init(sockfd: Int, soaddr: sockaddr_in, queue: dispatch_queue_t) {
+		self.sockfd = sockfd
+		self.soaddr = soaddr
+		self.remoteAddr = CJAddrToString(soaddr.sin_addr, family: soaddr.sin_family) ?? ""
+		self.remotePort = soaddr.sin_port
+		self.indata = dispatch_data_create(nil, 0, nil, nil)
+		self.channel = dispatch_io_create(DISPATCH_IO_STREAM, dispatch_fd_t(sockfd), queue) { error in
+			
+		}
+		
+		dispatch_io_set_low_water(channel, 1)
+		dispatch_io_set_interval(channel, 10000000000, DISPATCH_IO_STRICT_INTERVAL)
+		
+		dispatch_io_read(channel, 0, Int.max, queue) { done, data, error in
+			
+		}
+	}
 	
 }
 
@@ -89,18 +111,21 @@ internal struct CJHttpServerImpl: CJHttpServer {
 		
 		acceptHandler = { sockfd, soaddr in
 			DLog("")
+			
+			// create connection object
+			
+			//   which creates a source
+			
 		}
 	}
 	
 	mutating func start(completionHandler: (Bool, NSError?) -> Void) {
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) { [serverPort, acceptHandler] in
+		CJDispatchBackground() { [serverPort, acceptHandler] in
 			var success = true
 			var error: NSError?
 			var listener = CJSwerve.tcpListener(port: serverPort, acceptHandler: acceptHandler)
 			
-			defer {
-				completionHandler(success, error)
-			}
+			defer { CJDispatchMain() { completionHandler(success, error) } }
 			
 			do {
 				try listener.start()
@@ -116,8 +141,23 @@ internal struct CJHttpServerImpl: CJHttpServer {
 		
 	}
 	
-	func stop(completionHandler: (Bool, NSError?) -> Void) {
-		
+	mutating func stop(completionHandler: (Bool, NSError?) -> Void) {
+		CJDispatchBackground() {
+			var success = true
+			var error: NSError?
+			
+			defer { CJDispatchMain() { completionHandler(success, error) } }
+			
+			do {
+				try self.listener?.stop()
+			}
+			catch let e as NSError {
+				error = e
+			}
+			catch {
+				DLog("Failed for an unknown reason!")
+			}
+		}
 	}
 	
 	func addHandler(method: CJHttpMethod, pathEqual: String, handler: CJHttpServerRequestPathEqualsHandler) {
