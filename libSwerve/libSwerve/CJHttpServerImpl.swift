@@ -12,13 +12,57 @@ private enum ConnectionState {
 	case None
 	case Header
 	case Body
+	case Done
 }
 
 
 
 
 
-private struct Request: CJHttpServerRequest {
+internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
+	
+	var method: CJHttpMethod
+	var path: String
+//var query: [String: String]()
+	var query: String
+	var version: String
+	var headers = [String: CJHttpHeader]()
+	
+	init(methodName: String, path: String, version: String) {
+		if methodName == "GET" {
+			method = .Get
+		}
+		else if methodName == "POST" {
+			method = .Post
+		}
+		else {
+			method = .None
+		}
+		
+		// separate the path from the query (if any)
+		do {
+			if let qrange = path.rangeOfString("?") {
+				self.path = path.substringToIndex(qrange.startIndex)
+				self.query = path.substringFromIndex(qrange.startIndex)
+			}
+			else {
+				self.path = path
+				self.query = ""
+			}
+		}
+		
+		self.version = version
+	}
+	
+	mutating func addHeader(header: CJHttpHeader) {
+		guard var existingHeader = headers[header.name] else {
+			headers[header.name] = header
+			return
+		}
+		
+		existingHeader.mergeHeader(header)
+		headers[header.name] = existingHeader
+	}
 	
 }
 
@@ -36,7 +80,7 @@ private struct Response: CJHttpServerResponse {
 
 private protocol Handler {
 	
-	func matches(request: Request) -> Bool
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest) -> Bool
 	
 }
 
@@ -46,8 +90,9 @@ private struct PathEqualsHandler: Handler {
 	let path: String
 	let handler: CJHttpServerRequestPathEqualsHandler
 	
-	func matches(request: Request) -> Bool {
-		return false
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest) -> Bool {
+		handler(request) { response in }
+		return true
 	}
 	
 }
@@ -58,7 +103,7 @@ private struct PathLikeHandler: Handler {
 	let path: String
 	let handler: CJHttpServerRequestPathLikeHandler
 	
-	func matches(request: Request) -> Bool {
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest) -> Bool {
 		return false
 	}
 	
@@ -75,10 +120,7 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 	private var connectionState: ConnectionState = .None
 	
 	private var tmpdata = ""
-	private var method = ""
-	private var path = ""
-	private var version = ""
-	private var headers = [CJHttpHeader]()
+	private var request: CJHttpServerRequest?
 	
 	required init(connection: CJConnection, requestHandler: CJHttpConnectionRequestHandler) {
 		self.requestHandler = requestHandler
@@ -113,10 +155,8 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 						break
 					}
 					
-					// grab the method, path and version
-					_self.method = parts[0]
-					_self.path = parts[1]
-					_self.version = parts[2]
+					// create a new request object with the 1st line of the request
+					_self.request = CJSwerve.httpRequestType.init(methodName: parts[0], path: parts[1], version: parts[2])
 					
 					// trim the line from the buffer (including the newline characters)
 					startIndex = nlrange.endIndex
@@ -135,20 +175,29 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 					// get the first line
 					let line = _self.tmpdata.substringWithRange(Range<String.Index>(startIndex..<nlrange.startIndex))
 					
-					// save the header without parsing it further
-					_self.headers.append(CJHttpHeader(headerString: line))
-					
 					// trim the line from the buffer (including the newline characters)
 					startIndex = nlrange.endIndex
 					
 					// we got a blank line; advance to the body (if any)
-					if line.isEmpty == true { _self.connectionState = .Body }
+					if line.isEmpty == true { _self.connectionState = .Done; continue }
+					
+					// save the header without parsing it further
+					_self.request?.addHeader(CJHttpHeader(headerString: line))
 				}
 				
 				///
 				/// Body |
 				///
 				else if _self.connectionState == .Body {
+					break
+				}
+				
+				///
+				/// Done |
+				///
+				else if _self.connectionState == .Done {
+					_self.requestHandler(_self, _self.request!)
+					_self.request = nil
 					break
 				}
 			}
@@ -182,7 +231,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 			defer { CJDispatchMain() { completionHandler(success, nserror) } }
 			
 			let requestHandler: CJHttpConnectionRequestHandler = { connection, request in
-				
+				self.handlers.first?.matches(connection, request)
 			}
 			
 			// link new connections to http connection objects

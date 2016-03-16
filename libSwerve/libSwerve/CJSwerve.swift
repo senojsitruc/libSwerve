@@ -12,6 +12,7 @@ public struct CJSwerve {
 	
 	public static var httpServerType: CJHttpServer.Type = CJHttpServerImpl.self
 	public static var httpConnectionType: CJHttpConnection.Type = CJHttpConnectionImpl.self
+	public static var httpRequestType: CJHttpServerRequest.Type = CJHttpServerRequestImpl.self
 	
 	public static var tcpServerType: CJSocketServer.Type = CJTcpServerImpl.self
 	public static var tcpListenerType: CJSocketListener.Type = CJTcpListenerImpl.self
