@@ -52,7 +52,7 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 				_self.tmpdata = dispatch_data_create_concat(_self.tmpdata, dispatch_data_create(buffer, size, nil, nil))
 			}
 			
-			DLog("Total buffered data is now \(dispatch_data_get_size(_self.tmpdata))")
+			DLog("Total buffered data is \(dispatch_data_get_size(_self.tmpdata))")
 			
 			if _self.hasStartedTls == false {
 				if _self.startTLS() == true {

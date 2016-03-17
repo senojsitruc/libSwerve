@@ -21,51 +21,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		var httpServer = CJSwerve.httpServerType.init(server: tcpServer)
 		
 		///
-		/// downloads handler
-		///
-		httpServer.addHandler(.Get, pathLike: "^/Downloads/(.+)$") { values, request, response in
-			DLog("values = \(values)")
-			
-			// we expect two match values: the full string and the matched subpath
-			if values.count != 2 {
-				response.close()
-				return
-			}
-			
-			let path = values[1]
-			
-			// prevent the user from escaping the base directory
-			if path.rangeOfString("..") != nil {
-				response.close()
-				return
-			}
-			
-			CJDispatchBackground() {
-				var response = response
-				
-				// assemble the file path
-				let fileName = path
-				let fileType = (fileName as NSString).pathExtension.lowercaseString
-				let filePath = NSSearchPathForDirectoriesInDomains(.DownloadsDirectory, .UserDomainMask, true)[0] + "/" + fileName
-				
-				DLog("filePath = \(filePath)")
-				
-				// close the connection if the target file doesn't exist
-				guard let fileData = NSData(contentsOfFile: filePath) else {
-					response.close()
-					return
-				}
-				
-				// configure and send the response
-				response.addHeader("Content-Type", value: CJMimeTypeForExtension(fileType) ?? "content/octet-stream")
-				response.addHeader("Content-Length", value: fileData.length)
-				response.addHeader("Connection", value: "keep-alive")
-				response.write(fileData)
-				response.finish()
-			}
-		}
-		
-		///
 		/// default handler
 		///
 		httpServer.addHandler(.Get, pathEquals: "/") { request, response in
@@ -74,23 +29,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			CJDispatchBackground() {
 				var response = response
 				
-				let fileName = (request.path as NSString).lastPathComponent
-				let fileType = (fileName as NSString).pathExtension.lowercaseString
-				let filePath = NSSearchPathForDirectoriesInDomains(.DownloadsDirectory, .UserDomainMask, true)[0] + "/" + fileName
-				
-				DLog("filePath = \(filePath)")
-				
-				guard let fileData = NSData(contentsOfFile: filePath) else {
-					response.finish()
-					return
-				}
-				
-				response.addHeader("Content-Type", value: CJMimeTypeForExtension(fileType) ?? "content/octet-stream")
-				response.addHeader("Content-Length", value: fileData.length)
+				response.addHeader("Content-Type", value: "text/plain")
+				response.addHeader("Content-Length", value: 15)
 				response.addHeader("Connection", value: "keep-alive")
-				response.write(fileData)
+				response.write("This is a test.")
 				response.finish()
 			}
+		}
+		
+		///
+		/// downloads file handler
+		///
+		do {
+			let filePath = NSSearchPathForDirectoriesInDomains(.DownloadsDirectory, .UserDomainMask, true)[0]
+			httpServer.addFileModule(localPath: filePath, webPath: "/Test/", recurses: true)
 		}
 		
 		///

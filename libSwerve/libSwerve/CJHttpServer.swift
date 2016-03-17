@@ -201,4 +201,6 @@ public protocol CJHttpServer {
 	mutating func addHandler(method: CJHttpMethod, pathEquals: String, handler: CJHttpServerRequestPathEqualsHandler)
 	mutating func addHandler(method: CJHttpMethod, pathLike: String, handler: CJHttpServerRequestPathLikeHandler)
 	
+	func addFileModule(localPath localPath: String, webPath: String, recurses: Bool)
+	
 }
