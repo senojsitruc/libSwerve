@@ -16,6 +16,8 @@ FOUNDATION_EXPORT const unsigned char libSwerveVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <libSwerve/PublicHeader.h>
 
+#import "CJHexDump.h"
+
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>

@@ -94,6 +94,10 @@ internal class CJHttpServerResponseImpl: CJHttpServerResponse {
 		connection.resumeAfterWrites()
 	}
 	
+	func close() {
+		connection.close()
+	}
+	
 	private final func writeHeaders() {
 		connection.write("HTTP/1.1 200 OK\r\n")
 		
@@ -123,8 +127,15 @@ private struct PathEqualsHandler: Handler {
 	let handler: CJHttpServerRequestPathEqualsHandler
 	
 	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool {
-		handler(request, response)
-		return true
+		if request.path == path {
+			DLog("Matched")
+			handler(request, response)
+			return true
+		}
+		else {
+			DLog("No match")
+			return false
+		}
 	}
 	
 }
@@ -132,11 +143,25 @@ private struct PathEqualsHandler: Handler {
 private struct PathLikeHandler: Handler {
 	
 	let method: CJHttpMethod
-	let path: String
+	let regex: NSRegularExpression
 	let handler: CJHttpServerRequestPathLikeHandler
 	
 	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool {
-		return false
+		let path = request.path
+		var values = [String]()
+		
+		guard let result = regex.firstMatchInString(path, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, request.path.characters.count)) else { return false }
+		
+		for index in 0..<result.numberOfRanges {
+			guard let range = path.rangeFromNSRange(result.rangeAtIndex(index)) else { continue }
+			values.append(path.substringWithRange(range))
+		}
+		
+		DLog("Matched")
+		
+		handler(values, request, response)
+		
+		return true
 	}
 	
 }
@@ -160,10 +185,13 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 		self.connection.readHandler = { [weak self] data, leng in
 			guard let _self = self else { return 0 }
 			
-			// concatenate any buffered data with this new data
-			_self.tmpdata += String(CString: UnsafePointer<CChar>(data), encoding: NSUTF8StringEncoding) ?? ""
+//		hexdump(UnsafePointer<UInt8>(data), Int32(leng))
 			
-			DLog("tmpdata = \(_self.tmpdata)")
+			// concatenate any buffered data with this new data
+			_self.tmpdata += String(data: NSData(bytes: data, length: leng), encoding: NSUTF8StringEncoding) ?? ""
+//		_self.tmpdata += String(CString: UnsafePointer<CChar>(data), encoding: NSUTF8StringEncoding) ?? ""
+			
+			DLog("tmpdata [\(_self.tmpdata.characters.count)] = \(_self.tmpdata)")
 			
 			// we'll update this index as we run through the string instead of repeatedly substring()'ing
 			var startIndex = _self.tmpdata.startIndex
@@ -188,7 +216,7 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 					// there should be precisely three parts (method, path and version)
 					if parts.count != 3 {
 						DLog("Unsupported 1st line; expected 3 parts: \(line)")
-						connection.close()
+						connection.closeConnection()
 						break
 					}
 					
@@ -200,6 +228,8 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 					
 					// we got the 1st line; let's move on to the header
 					_self.connectionState = .Header
+					
+					DLog("Parsed 1st line")
 				}
 					
 				///
@@ -220,6 +250,7 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 					// we got a blank line; advance to the body (if any)
 					if line.isEmpty == true {
 						_self.connectionState = .Done
+						DLog("Finished reading headers.")
 						break
 					}
 					
@@ -239,6 +270,7 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 			/// Done |
 			///
 			if _self.connectionState == .Done {
+				DLog("Handling request")
 				_self.connectionState = .None
 				_self.connection.pause()
 				_self.requestHandler(_self, _self.request!)
@@ -247,12 +279,14 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 		
 			_self.tmpdata = _self.tmpdata.substringFromIndex(startIndex)
 			
+			DLog("Return used length = \(leng)")
+			
 			return leng
 		}
 	}
 	
 	func close() {
-		connection.close()
+		connection.closeConnection()
 	}
 	
 	func resume() {
@@ -298,6 +332,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 				}
 				
 				if matched == false {
+					DLog("No handler match found; closing connection")
 					connection.close()
 				}
 			}
@@ -348,8 +383,14 @@ internal class CJHttpServerImpl: CJHttpServer {
 		handlers.append(PathEqualsHandler(method: method, path: path, handler: handler))
 	}
 	
-	func addHandler(method: CJHttpMethod, pathLike path: String, handler: CJHttpServerRequestPathLikeHandler) {
-		handlers.append(PathLikeHandler(method: method, path: path, handler: handler))
+	func addHandler(method: CJHttpMethod, pathLike pattern: String, handler: CJHttpServerRequestPathLikeHandler) {
+		do {
+			let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions(rawValue: 0))
+			handlers.append(PathLikeHandler(method: method, regex: regex, handler: handler))
+		}
+		catch {
+			DLog("Failed to install handler because of invalid regex pattern: \(pattern)")
+		}
 	}
 	
 }

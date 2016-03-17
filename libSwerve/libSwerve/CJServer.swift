@@ -24,7 +24,7 @@ public protocol CJConnection {
 	var readHandler: CJConnectionReadHandler? { get set }
 	
 	func open()
-	func close()
+	func closeConnection()
 	func pause()
 	func resume(waitForWrites waitForWrites: Bool)
 	

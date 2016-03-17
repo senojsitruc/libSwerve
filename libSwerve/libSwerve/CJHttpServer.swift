@@ -159,6 +159,7 @@ public protocol CJHttpServerResponse {
 	func write(string: String)
 	
 	func finish()
+	func close()
 	
 }
 

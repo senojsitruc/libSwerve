@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F930CEE81C9A310C0051675B /* CJHexDump.c in Sources */ = {isa = PBXBuildFile; fileRef = F930CEE61C9A310C0051675B /* CJHexDump.c */; };
+		F930CEE91C9A310C0051675B /* CJHexDump.c in Sources */ = {isa = PBXBuildFile; fileRef = F930CEE61C9A310C0051675B /* CJHexDump.c */; };
+		F930CEEA1C9A310C0051675B /* CJHexDump.h in Headers */ = {isa = PBXBuildFile; fileRef = F930CEE71C9A310C0051675B /* CJHexDump.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F930CEEB1C9A310C0051675B /* CJHexDump.h in Headers */ = {isa = PBXBuildFile; fileRef = F930CEE71C9A310C0051675B /* CJHexDump.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F98212761C98965D0086F948 /* libSwerve.h in Headers */ = {isa = PBXBuildFile; fileRef = F98212751C98965D0086F948 /* libSwerve.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F98212A11C9898E00086F948 /* CJSwerve.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A01C9898E00086F948 /* CJSwerve.swift */; };
 		F98212A31C989A820086F948 /* CJHttpServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A21C989A820086F948 /* CJHttpServerImpl.swift */; };
@@ -29,6 +33,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F930CEE61C9A310C0051675B /* CJHexDump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CJHexDump.c; sourceTree = "<group>"; };
+		F930CEE71C9A310C0051675B /* CJHexDump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJHexDump.h; sourceTree = "<group>"; };
 		F98212721C98965D0086F948 /* libSwerve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libSwerve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F98212751C98965D0086F948 /* libSwerve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libSwerve.h; sourceTree = "<group>"; };
 		F98212771C98965D0086F948 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -125,6 +131,8 @@
 			isa = PBXGroup;
 			children = (
 				F98212B31C98B4940086F948 /* CJExtensions.swift */,
+				F930CEE61C9A310C0051675B /* CJHexDump.c */,
+				F930CEE71C9A310C0051675B /* CJHexDump.h */,
 			);
 			name = Miscellaneous;
 			sourceTree = "<group>";
@@ -137,6 +145,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F98212761C98965D0086F948 /* libSwerve.h in Headers */,
+				F930CEEA1C9A310C0051675B /* CJHexDump.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +153,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F930CEEB1C9A310C0051675B /* CJHexDump.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +251,7 @@
 				F98212B11C98AD6C0086F948 /* CJTcpListenerImpl.swift in Sources */,
 				F98212E81C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */,
 				F98212AC1C98A03B0086F948 /* CJServer.swift in Sources */,
+				F930CEE81C9A310C0051675B /* CJHexDump.c in Sources */,
 				F98212A51C989B1A0086F948 /* CJHttpServer.swift in Sources */,
 				F98212AA1C989ED20086F948 /* CJServerImpl.swift in Sources */,
 				F98212EB1C990F2C0086F948 /* CJSocketServer.swift in Sources */,
@@ -257,6 +268,7 @@
 				F98212CC1C98CC4B0086F948 /* CJTcpListenerImpl.swift in Sources */,
 				F98212E91C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */,
 				F98212CD1C98CC4B0086F948 /* CJServer.swift in Sources */,
+				F930CEE91C9A310C0051675B /* CJHexDump.c in Sources */,
 				F98212CE1C98CC4B0086F948 /* CJHttpServer.swift in Sources */,
 				F98212D01C98CC4B0086F948 /* CJExtensions.swift in Sources */,
 				F98212EC1C990F2C0086F948 /* CJSocketServer.swift in Sources */,
@@ -398,15 +410,20 @@
 		F98212C11C98CBCD0086F948 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = libSwerve;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		F98212C21C98CBCD0086F948 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				EXECUTABLE_PREFIX = lib;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = libSwerve;
 			};
 			name = Release;
@@ -430,6 +447,7 @@
 				F982127C1C98965D0086F948 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		F98212C01C98CBCD0086F948 /* Build configuration list for PBXNativeTarget "libSwerve (Static)" */ = {
 			isa = XCConfigurationList;
@@ -438,6 +456,7 @@
 				F98212C21C98CBCD0086F948 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

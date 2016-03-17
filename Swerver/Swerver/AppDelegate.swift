@@ -20,6 +20,64 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		let tcpServer = CJSwerve.tcpServerType.init(port: 8080)
 		var httpServer = CJSwerve.httpServerType.init(server: tcpServer)
 		
+		///
+		/// downloads handler
+		///
+		httpServer.addHandler(.Get, pathLike: "^/Downloads/(.+)$") { values, request, response in
+			DLog("values = \(values)")
+			
+			// we expect two match values: the full string and the matched subpath
+			if values.count != 2 {
+				response.close()
+				return
+			}
+			
+			let path = values[1]
+			
+			// prevent the user from escaping the base directory
+			if path.rangeOfString("..") != nil {
+				response.close()
+				return
+			}
+			
+			CJDispatchBackground() {
+				var response = response
+				
+				// assemble the file path
+				let fileName = path
+				let fileType = (fileName as NSString).pathExtension.lowercaseString
+				let filePath = NSSearchPathForDirectoriesInDomains(.DownloadsDirectory, .UserDomainMask, true)[0] + "/" + fileName
+				
+				DLog("filePath = \(filePath)")
+				
+				// close the connection if the target file doesn't exist
+				guard let fileData = NSData(contentsOfFile: filePath) else {
+					response.close()
+					return
+				}
+				
+				// decode the proper mime-type
+				if fileType == "jpg" || fileType == "jpeg" {
+					response.addHeader("Content-Type", value: "image/jpeg")
+				}
+				else if fileType == "png" {
+					response.addHeader("Content-Type", value: "image/png")
+				}
+				else if fileType == "gif" {
+					response.addHeader("Content-Type", value: "image/gif")
+				}
+				
+				// configure and send the response
+				response.addHeader("Content-Length", value: fileData.length)
+				response.addHeader("Connection", value: "keep-alive")
+				response.write(fileData)
+				response.finish()
+			}
+		}
+		
+		///
+		/// default handler
+		///
 		httpServer.addHandler(.Get, pathEquals: "/") { request, response in
 			DLog("request = \(request)")
 			
@@ -52,11 +110,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 				response.write(fileData)
 				response.finish()
 			}
-			
-			// response.write() { finished in return NSData(contentsOfURL: ...); finished = true }
-			// response.finish()
 		}
 		
+		///
+		/// start the http server
+		///
 		httpServer.start() { success, error in
 			DLog("success = \(success), error = \(error?.localizedDescription)")
 			self.server = httpServer

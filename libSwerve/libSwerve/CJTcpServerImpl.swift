@@ -26,6 +26,7 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 	private var stop = false
 	private var paused = false
 	private var tmpdata: dispatch_data_t = dispatch_data_create(nil, 0, nil, nil)
+	private let tmpdataQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.tmpdataQueue", DISPATCH_QUEUE_SERIAL)
 	private var bytesIn: size_t = 0
 	
 	required init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t) {
@@ -48,7 +49,7 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 		
 		dispatch_io_set_interval(channel, 10000000000, DISPATCH_IO_STRICT_INTERVAL)
 		
-		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, remoteAddr, remotePort] done, data, error in
+		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, remoteAddr, remotePort, tmpdataQueue] done, data, error in
 			let size = dispatch_data_get_size(data)
 			
 			DLog("\(remoteAddr):\(remotePort) :: read bytes = \(dispatch_data_get_size(data))")
@@ -62,16 +63,20 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 			
 			// enumerate the memory regions of the data buffer. the handler will tell us how many bytes it
 			// has consumed and we'll subrange() them off the front when we're done
-			if let data = data /*, handler = _self.readHandler */ {
+			if let data = data {
 				_self.bytesIn += size
-				_self.tmpdata = dispatch_data_create_concat(_self.tmpdata, data)
+				dispatch_sync(tmpdataQueue) {
+					_self.tmpdata = dispatch_data_create_concat(_self.tmpdata, data)
+				}
 				_self.applyData()
 			}
 		}
 	}
 	
-	func close() {
+	func closeConnection() {
 		stop = true
+		dispatch_io_close(channel, 0)
+		close(sockfd)
 	}
 	
 	///
@@ -82,6 +87,11 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 	}
 	
 	func resume(waitForWrites waitForWrites: Bool = false) {
+		if stop == true {
+			DLog("Cannot resume a closed connection.")
+			return
+		}
+		
 		if waitForWrites == true {
 			dispatch_group_async(writeGroup, queue) { self.paused = false; self.applyData() }
 		}
@@ -93,6 +103,12 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?) {
 		DLog("writing bytes = \(size)")
+		
+		if stop == true {
+			DLog("Cannot write to a closed connection.")
+			completionHandler?(false)
+			return
+		}
 		
 		dispatch_group_enter(writeGroup)
 		dispatch_io_write(channel, 0, dispatch_data_create(bytes, size, nil, nil), queue) { [writeGroup] done, data, error in
@@ -114,13 +130,15 @@ internal class CJTcpConnectionImpl: CJSocketConnection {
 		
 		var totalUsed = 0
 		
-		dispatch_data_apply(tmpdata) { region, offset, buffer, size in
-			let used = handler(buffer, size)
-			totalUsed += used
-			return used == size
+		dispatch_sync(tmpdataQueue) {
+			dispatch_data_apply(self.tmpdata) { region, offset, buffer, size in
+				let used = handler(buffer, size)
+				totalUsed += used
+				return used == size
+			}
+			
+			self.tmpdata = dispatch_data_create_subrange(self.tmpdata, totalUsed, dispatch_data_get_size(self.tmpdata) - totalUsed)
 		}
-		
-		tmpdata = dispatch_data_create_subrange(tmpdata, totalUsed, dispatch_data_get_size(tmpdata) - totalUsed)
 	}
 	
 }
@@ -183,7 +201,7 @@ internal class CJTcpServerImpl: CJSocketServer {
 		try listener?.stop()
 		listener = nil
 		
-		connections.forEach() { $0.connection.close() }
+		connections.forEach() { $0.connection.closeConnection() }
 		connections.removeAll()
 	}
 	
