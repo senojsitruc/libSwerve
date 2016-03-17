@@ -56,18 +56,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 					return
 				}
 				
-				// decode the proper mime-type
-				if fileType == "jpg" || fileType == "jpeg" {
-					response.addHeader("Content-Type", value: "image/jpeg")
-				}
-				else if fileType == "png" {
-					response.addHeader("Content-Type", value: "image/png")
-				}
-				else if fileType == "gif" {
-					response.addHeader("Content-Type", value: "image/gif")
-				}
-				
 				// configure and send the response
+				response.addHeader("Content-Type", value: CJMimeTypeForExtension(fileType) ?? "content/octet-stream")
 				response.addHeader("Content-Length", value: fileData.length)
 				response.addHeader("Connection", value: "keep-alive")
 				response.write(fileData)
@@ -95,16 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 					return
 				}
 				
-				if fileType == "jpg" || fileType == "jpeg" {
-					response.addHeader("Content-Type", value: "image/jpeg")
-				}
-				else if fileType == "png" {
-					response.addHeader("Content-Type", value: "image/png")
-				}
-				else if fileType == "gif" {
-					response.addHeader("Content-Type", value: "image/gif")
-				}
-				
+				response.addHeader("Content-Type", value: CJMimeTypeForExtension(fileType) ?? "content/octet-stream")
 				response.addHeader("Content-Length", value: fileData.length)
 				response.addHeader("Connection", value: "keep-alive")
 				response.write(fileData)

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F930CEF31C9AEB0A0051675B /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F930CEF21C9AEB0A0051675B /* Security.framework */; };
 		F98212D81C98CD8A0086F948 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212D71C98CD8A0086F948 /* AppDelegate.swift */; };
 		F98212DA1C98CD8A0086F948 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F98212D91C98CD8A0086F948 /* Assets.xcassets */; };
 		F98212DD1C98CD8A0086F948 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F98212DB1C98CD8A0086F948 /* MainMenu.xib */; };
@@ -39,6 +40,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F930CEF21C9AEB0A0051675B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		F98212971C9898700086F948 /* libSwerve.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libSwerve.xcodeproj; path = ../libSwerve/libSwerve.xcodeproj; sourceTree = "<group>"; };
 		F98212D51C98CD8A0086F948 /* Swerver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Swerver.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F98212D71C98CD8A0086F948 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -52,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F930CEF31C9AEB0A0051675B /* Security.framework in Frameworks */,
 				F98212E61C98CE330086F948 /* libSwerve.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,6 +82,7 @@
 		F98212961C9898650086F948 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F930CEF21C9AEB0A0051675B /* Security.framework */,
 				F98212971C9898700086F948 /* libSwerve.xcodeproj */,
 			);
 			name = Frameworks;
