@@ -19,6 +19,7 @@ FOUNDATION_EXPORT const unsigned char libSwerveVersionString[];
 #import "CJHexDump.h"
 #import "OpenSSLCertificate.h"
 #import "NSData+SHA256Digest.h"
+#import "PGPortMapperBonjour.h"
 
 #include <ctype.h>
 #include <errno.h>

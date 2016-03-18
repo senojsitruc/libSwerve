@@ -366,6 +366,7 @@ internal class CJTcpServerImpl: CJSocketServer {
 	private let queue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.queue", DISPATCH_QUEUE_SERIAL)
 	
 	private var listener: CJSocketListener?
+	private var portMapper: PGPortMapperBonjour?
 	
 	required init(port: UInt16) {
 		serverPort = port
@@ -408,6 +409,24 @@ internal class CJTcpServerImpl: CJSocketServer {
 				self.connections.remove(connection)
 			}
 		}
+	}
+	
+	func enablePortMapping(externalPort port: UInt16) {
+		if portMapper != nil {
+			DLog("Port mapping is already enabled.")
+			return
+		}
+		
+		portMapper = PGPortMapperBonjour(privatePort: serverPort, publicPort: port) { portMapper in
+			DLog("Port Mapper | publicAddress = \(portMapper.publicAddress), publicPort: \(portMapper.publicPort), isMapped = \(portMapper.isMapped), error = \(portMapper.error)")
+		}
+		
+		portMapper?.open()
+	}
+	
+	func disablePortMapping() {
+		portMapper?.close()
+		portMapper = nil
 	}
 	
 	func connectionType() -> CJSocketConnection.Type { return CJSwerve.tcpConnectionType }

@@ -17,6 +17,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	var server: CJHttpServer!
 
 	func applicationDidFinishLaunching(aNotification: NSNotification) {
+		setupHttpServer()
+	}
+
+	func applicationWillTerminate(aNotification: NSNotification) { }
+	
+	func applicationShouldTerminate(sender: NSApplication) -> NSApplicationTerminateReply {
+		server?.stop() { success, error in
+			DLog("success = \(success), error = \(error?.localizedDescription)")
+			sender.replyToApplicationShouldTerminate(true)
+		}
+		
+		return .TerminateLater
+	}
+	
+	
+	
+	
+	
+	private final func setupHttpServer() {
 		//CJCrypto.generateKeyPair(label: "us.curtisjones.libSwerve.tlsKey-002")
 		//tlsIdentity = SecIdentity.create(numberOfBits: 4096, error: nil)
 		//if let identity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.001") {
@@ -59,18 +78,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			self.server = httpServer
 		}
 		
-		server = httpServer
-	}
-
-	func applicationWillTerminate(aNotification: NSNotification) { }
-	
-	func applicationShouldTerminate(sender: NSApplication) -> NSApplicationTerminateReply {
-		server?.stop() { success, error in
-			DLog("success = \(success), error = \(error?.localizedDescription)")
-			sender.replyToApplicationShouldTerminate(true)
-		}
+		tcpServer.enablePortMapping(externalPort: 0)
 		
-		return .TerminateLater
+		server = httpServer
 	}
 	
 }

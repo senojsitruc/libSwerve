@@ -11,14 +11,14 @@ import Foundation
 let dlogQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJExtensions.dlogqueue", DISPATCH_QUEUE_SERIAL)
 
 public func DLog(message: String?, file: String = #file, line: Int = #line, function: String = #function) {
-//	dispatch_sync(dlogQueue) {
-//		if let message = message where message.isEmpty == false {
-//			print("\(NSDate()): \(file)+\(line)::\(function).. \(message)")
-//		}
-//		else {
-//			print("\(NSDate()): \(file)+\(line)::\(function)")
-//		}
-//	}
+	dispatch_sync(dlogQueue) {
+		if let message = message where message.isEmpty == false {
+			print("\(NSDate()): \(file)+\(line)::\(function).. \(message)")
+		}
+		else {
+			print("\(NSDate()): \(file)+\(line)::\(function)")
+		}
+	}
 }
 
 internal func cjstrerror(error: Int32 = errno) -> String? {

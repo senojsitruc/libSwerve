@@ -21,6 +21,9 @@ public protocol CJSocketServer: CJServer {
 	
 	init(port: UInt16)
 	
+	func enablePortMapping(externalPort port: UInt16)
+	func disablePortMapping()
+	
 }
 
 public typealias CJSocketListenerAcceptHandler = (Int32, sockaddr_in) -> Void
