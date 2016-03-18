@@ -416,18 +416,12 @@ internal class CJHttpServerImpl: CJHttpServer {
 	func addFileModule(localPath _lp: String, webPath _wp: String, recurses: Bool) {
 		let localPath = _lp.hasSuffix("/") ? _lp : (_lp + "/")
 		let webPath = _wp.hasSuffix("/") ? _wp.substringToIndex(_wp.endIndex.predecessor()) : _wp
+		let fileManager = NSFileManager()
 		
-		self.addHandler(.Get, pathLike: "^\(webPath)/(.+)$") { values, request, response in
+		self.addHandler(.Get, pathLike: "^\(webPath)/(.*)$") { values, request, response in
 			DLog("values = \(values)")
 			
-			// we expect two match values: the full string and the matched subpath
-			if values.count != 2 {
-				response.finish()
-				response.close()
-				return
-			}
-			
-			let path = values[1]
+			let path = values.count == 2 ? values[1] : ""
 			
 			// prevent the user from escaping the base directory
 			if path.rangeOfString("..") != nil {
@@ -446,18 +440,58 @@ internal class CJHttpServerImpl: CJHttpServer {
 				
 				//DLog("filePath = \(filePath)")
 				
-				// close the connection if the target file doesn't exist
-				guard let fileData = NSData(contentsOfFile: filePath) else {
+				var isdir: ObjCBool = false
+				let exists = fileManager.fileExistsAtPath(filePath, isDirectory: &isdir)
+				
+				if exists == false {
 					response.finish()
 					response.close()
 					return
 				}
 				
-				// configure and send the response
-				response.addHeader("Content-Type", value: CJMimeTypeForExtension(fileType) ?? "content/octet-stream")
-				response.addHeader("Content-Length", value: fileData.length)
-				response.addHeader("Connection", value: "keep-alive")
-				response.write(fileData)
+				if Bool(isdir) == true {
+					do {
+						var page = "<html><body>"
+						
+						for fileName in try fileManager.contentsOfDirectoryAtPath(filePath) {
+							if fileName.hasPrefix(".") == false {
+								page += "<a href=\"\(fileName.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet()) ?? "")\">\(fileName)</a><br>"
+							}
+						}
+						
+						page += "</body></html>"
+						
+						guard let fileData = page.dataUsingEncoding(NSUTF8StringEncoding) else {
+							response.finish()
+							response.close()
+							return
+						}
+						
+						// configure and send the response
+						response.addHeader("Content-Type", value: "text/html")
+						response.addHeader("Content-Length", value: fileData.length)
+						response.addHeader("Connection", value: "keep-alive")
+						response.write(fileData)
+					}
+					catch {
+						DLog("Failed to read directory contents [filePath = \(filePath)]")
+					}
+				}
+				else {
+					// close the connection if the target file doesn't exist
+					guard let fileData = NSData(contentsOfFile: filePath) else {
+						response.finish()
+						response.close()
+						return
+					}
+					
+					// configure and send the response
+					response.addHeader("Content-Type", value: CJMimeTypeForExtension(fileType) ?? "content/octet-stream")
+					response.addHeader("Content-Length", value: fileData.length)
+					response.addHeader("Connection", value: "keep-alive")
+					response.write(fileData)
+				}
+				
 				response.finish()
 			}
 		}

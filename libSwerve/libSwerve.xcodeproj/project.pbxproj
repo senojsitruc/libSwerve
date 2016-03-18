@@ -81,8 +81,6 @@
 		F98212BA1C98CBCD0086F948 /* liblibSwerve.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibSwerve.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTcpServerImpl.swift; sourceTree = "<group>"; };
 		F98212EA1C990F2C0086F948 /* CJSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJSocketServer.swift; sourceTree = "<group>"; };
-		F9BF677F1C9BCD86004AB3EE /* libssl.0.9.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libssl.0.9.8.tbd; path = usr/lib/libssl.0.9.8.tbd; sourceTree = SDKROOT; };
-		F9BF67811C9BCD90004AB3EE /* libcrypto.0.9.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcrypto.0.9.8.tbd; path = usr/lib/libcrypto.0.9.8.tbd; sourceTree = SDKROOT; };
 		F9BF67841C9BCF36004AB3EE /* openssl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openssl.xcodeproj; path = Extern/OpenSSL/openssl.xcodeproj; sourceTree = "<group>"; };
 		F9BF67911C9BD3CF004AB3EE /* DeviceId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceId.swift; path = Extern/Pulse/DeviceId.swift; sourceTree = "<group>"; };
 		F9BF67951C9BD5A5004AB3EE /* NSData+SHA256Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+SHA256Digest.h"; path = "Extern/Pulse/NSData+SHA256Digest.h"; sourceTree = "<group>"; };
@@ -124,8 +122,6 @@
 		F98212681C98965D0086F948 = {
 			isa = PBXGroup;
 			children = (
-				F9BF67811C9BCD90004AB3EE /* libcrypto.0.9.8.tbd */,
-				F9BF677F1C9BCD86004AB3EE /* libssl.0.9.8.tbd */,
 				F98212741C98965D0086F948 /* libSwerve */,
 				F98212731C98965D0086F948 /* Products */,
 			);
