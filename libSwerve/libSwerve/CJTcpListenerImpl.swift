@@ -30,6 +30,7 @@ internal struct CJTcpListenerImpl: CJSocketListener {
 		var status: Int32 = 0
 		var reuse: Int32 = 1
 		var nodelay: Int32 = 1
+		var solinger = linger(l_onoff: 1, l_linger: 1)
 		var soaddr = sockaddr_in()
 		
 		// create the socket
@@ -54,7 +55,7 @@ internal struct CJTcpListenerImpl: CJSocketListener {
 		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		// listen
-		status = listen(sockfd, 1000)
+		status = listen(sockfd, 100)
 		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		self.sockfd = sockfd
@@ -65,6 +66,9 @@ internal struct CJTcpListenerImpl: CJSocketListener {
 			var addr = sockaddr_in()
 			var alen = socklen_t(sizeof(sockaddr_in))
 			let sock = accept(sockfd, sockaddr_castm(&addr), &alen)
+			
+			setsockopt(sock, SOL_SOCKET, SO_LINGER, &solinger, socklen_t(sizeof(linger)))
+			
 			if sock > 0 { self.acceptHandler(sock, addr) }
 		}
 		

@@ -169,7 +169,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	var readHandler: CJConnectionReadHandler?
 	var closeHandler: ((CJConnection) -> Void)?
 	
-	let channel: dispatch_io_t
+	var channel: dispatch_io_t!
 	let indata: dispatch_data_t
 	
 	var sockfd: Int32
@@ -177,10 +177,11 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	let remoteAddr: String
 	let remotePort: UInt16
 	
-	private var stop = false
+	private var stop: Int32 = 0
 	private let queue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.queue", DISPATCH_QUEUE_SERIAL)
 	private let group = dispatch_group_create()
 	private var bytesIn: size_t = 0
+	private var bytesOut: size_t = 0
 	
 	required init(sockfd: Int32, soaddr: sockaddr_in) {
 		self.sockfd = sockfd
@@ -188,108 +189,112 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 		self.remoteAddr = CJAddrToString(soaddr.sin_addr, family: soaddr.sin_family) ?? ""
 		self.remotePort = soaddr.sin_port
 		self.indata = dispatch_data_create(nil, 0, nil, nil)
-		self.channel = dispatch_io_create(DISPATCH_IO_STREAM, dispatch_fd_t(sockfd), queue) { error in }
 		
-		DLog("\(remoteAddr):\(remotePort) :: Incoming connection established. [\(sockfd)]")
+		log("Incoming connection established.")
 	}
 	
 	func open() {
+		self.channel = dispatch_io_create(DISPATCH_IO_STREAM, dispatch_fd_t(sockfd), queue) { [weak self, sockfd] error in
+			if error != 0 {
+				self?.log("Channel open failed. [sockfd = \(sockfd), error = (\(error)) \(cjstrerror(error))")
+				self?.channel = nil
+				self?.closeConnection()
+			}
+		}
+		
+		guard let channel = self.channel else { return }
+		
 		dispatch_io_set_low_water(channel, 1)
 		dispatch_io_set_interval(channel, 10000000000, DISPATCH_IO_STRICT_INTERVAL)
-		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, remoteAddr, remotePort, group] done, data, error in
-			dispatch_group_enter(group)
-			if self?.stop == false {
-				if data != nil {
-					self?.handleIncoming(done: done, data: data, error: error)
-				}
-				
-				if data != nil && error != 0 {
-					self?.closeConnection()
-					print("\(remoteAddr):\(remotePort) :: [\(dispatch_data_get_size(data)), \(cjstrerror(error))]")
-				}
-				else if error != 0 {
-					self?.closeConnection()
-					print("\(remoteAddr):\(remotePort) :: [error = [\(error)] \(cjstrerror(error))]")
-				}
+		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, group] done, data, error in
+			if self?.stop != 0 {
+				return
 			}
+			
+			dispatch_group_enter(group)
+			
+			if data != nil && dispatch_data_get_size(data) != 0 {
+				self?.handleIncoming(done: done, data: data, error: error)
+			}
+			
+			if error != 0 {
+				self?.closeConnection()
+				self?.log("Reading. \(error) = \(cjstrerror(error))")
+			}
+			
 			dispatch_group_leave(group)
 		}
 	}
 	
 	func closeConnection() {
-		if stop == true {
-			print("[\(sockfd)] Already closed.")
-			return
-		}
+		if OSAtomicCompareAndSwap32(0, 1, &stop) == false { return }
 		
-		//DLog("\(remoteAddr):\(remotePort) :: [A]")
-		
-		stop = true
-		readHandler = nil
-		
-		// close the read channel
-//		dispatch_io_close(channel, 0)
-		
-		// close the socket after any pending writes have finished; parameterize this behavior?
-		dispatch_group_async(group, queue) { [closeHandler] in
-			let sockfd = self.sockfd
-			if sockfd == 0 { return }
-			
-			dispatch_io_close(self.channel, DISPATCH_IO_STOP)
-			Darwin.close(sockfd)
-			closeHandler?(self)
-			self.closeHandler = nil
+		dispatch_group_notify(group, queue) { [sockfd] in
+			self.readHandler = nil
 			self.sockfd = 0
+			
+			if let channel = self.channel {
+				dispatch_io_close(channel, DISPATCH_IO_STOP)
+			}
+			close(sockfd)
+			
+			self.closeHandler?(self)
+			
+			self.closeHandler = nil
 			self.context = nil
-			//DLog("\(self.remoteAddr):\(self.remotePort) :: [B]")
+			
+			//self.log("Stopped. [bytesIn = \(self.bytesIn); bytesOut = \(self.bytesOut)]")
 		}
-		
-//		dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
-//		Darwin.close(sockfd)
-//		closeHandler?(self)
-		
-//		DLog("\(remoteAddr):\(remotePort) :: [B]")
 	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?) {
-		//DLog("writing bytes = \(size)")
+		//log("Writing \(size) bytes.")
 		
-		if stop == true {
-			DLog("Cannot write to a closed connection.")
+		if stop != 0 {
+			log("Cannot write to a closed connection.")
 			completionHandler?(false)
 			return
 		}
+		
+		bytesOut += size
 		
 		dispatch_group_enter(group)
 		dispatch_io_write(channel, 0, dispatch_data_create(bytes, size, nil, nil), queue) { [group] done, data, error in
 			if done == true {
 				completionHandler?(error == 0)
+				
+				if error != 0 {
+					self.closeConnection()
+					self.log("Writing. [error = [\(error)] \(cjstrerror(error))]")
+				}
+				
+				dispatch_group_leave(group)
+			}
+			else if error != 0 {
+				self.log("Writing. [error = [\(error)] \(cjstrerror(error))]")
 				dispatch_group_leave(group)
 			}
 		}
 	}
 	
 	private final func handleIncoming(done done: Bool, data: dispatch_data_t, error: Int32) {
-		guard let handler = readHandler else {
-			DLog("\(remoteAddr):\(remotePort) :: [No handler!]")
-//		DLog("No handler! [\(dispatch_data_get_size(data))]")
-			return
-		}
+		guard let handler = readHandler else { return }
 		
 		let size = dispatch_data_get_size(data)
 		
 		if size == 0 { return }
 		
-		//DLog("\(remoteAddr):\(remotePort) :: read bytes = \(dispatch_data_get_size(data))")
-		
 		// check for a stop signal
-		if stop == true { return }
+		if stop != 0 { return }
 		
 		bytesIn += size
 		
 		dispatch_data_apply(data) { region, offset, buffer, size in handler(buffer, size); return true }
 	}
 	
+	private final func log(string: String) {
+//		print("\(remoteAddr):\(remotePort) [sockfd = \(sockfd), copen = \(CJTcpSocketConnectionImpl.connectionsOpen), copen2 = \(CJTcpSocketConnectionImpl.connectionsOpen2)] :: " + string)
+	}
 }
 
 
@@ -326,7 +331,6 @@ internal class CJTlsServerImpl: CJTcpServerImpl {
 		
 //	tlsIdentity = SecIdentity.create(numberOfBits: 4096, error: nil)
 		tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.001")
-//	tlsIdentity = SecIdentity.myIdentity()
 		
 		DLog("tlsIdentity = \(tlsIdentity) | \(tlsIdentity?.commonName)")
 		
@@ -392,7 +396,7 @@ internal class CJTcpServerImpl: CJSocketServer {
 	}
 	
 	private func startConnection(connection: Connection) {
-		dispatch_async(queue) {
+		dispatch_sync(queue) {
 			self.connections.insert(connection)
 		}
 		acceptHandler?(connection.connection)
@@ -400,7 +404,7 @@ internal class CJTcpServerImpl: CJSocketServer {
 	}
 	
 	private func closeConnection(connection: Connection?) {
-		dispatch_async(queue) {
+		dispatch_sync(queue) {
 			if let connection = connection {
 				self.connections.remove(connection)
 			}
