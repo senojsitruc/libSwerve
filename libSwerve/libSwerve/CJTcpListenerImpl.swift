@@ -67,6 +67,7 @@ internal struct CJTcpListenerImpl: CJSocketListener {
 			var alen = socklen_t(sizeof(sockaddr_in))
 			let sock = accept(sockfd, sockaddr_castm(&addr), &alen)
 			
+			// sets the linger time for sockets; we don't want a bunch of old socket connections
 			setsockopt(sock, SOL_SOCKET, SO_LINGER, &solinger, socklen_t(sizeof(linger)))
 			
 			if sock > 0 { self.acceptHandler(sock, addr) }

@@ -104,7 +104,7 @@ internal class CJHttpServerResponseImpl: CJHttpServerResponse {
 	func finish() {
 		request.cleanup()
 		
-		guard request.headers["Connection"]?.value == "keep-alive" else {
+		guard request.headers["Connection"]?.value?.lowercaseString == "keep-alive" else {
 			connection.close()
 			return
 		}

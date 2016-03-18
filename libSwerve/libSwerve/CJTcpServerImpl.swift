@@ -200,6 +200,9 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 				self?.channel = nil
 				self?.closeConnection()
 			}
+			else {
+				self?.log("Channel closed. [sockfd = \(sockfd)")
+			}
 		}
 		
 		guard let channel = self.channel else { return }
@@ -217,9 +220,9 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 				self?.handleIncoming(done: done, data: data, error: error)
 			}
 			
-			if error != 0 {
+			if done == true || error != 0 {
 				self?.closeConnection()
-				self?.log("Reading. \(error) = \(cjstrerror(error))")
+				self?.log("Error while reading. \(error) = \(cjstrerror(error))")
 			}
 			
 			dispatch_group_leave(group)
@@ -243,7 +246,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			self.closeHandler = nil
 			self.context = nil
 			
-			//self.log("Stopped. [bytesIn = \(self.bytesIn); bytesOut = \(self.bytesOut)]")
+			self.log("Connection closed. [bytesIn = \(self.bytesIn); bytesOut = \(self.bytesOut)]")
 		}
 	}
 	
@@ -293,7 +296,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	}
 	
 	private final func log(string: String) {
-//		print("\(remoteAddr):\(remotePort) [sockfd = \(sockfd), copen = \(CJTcpSocketConnectionImpl.connectionsOpen), copen2 = \(CJTcpSocketConnectionImpl.connectionsOpen2)] :: " + string)
+//		print("\(remoteAddr):\(remotePort) [sockfd = \(sockfd)] :: " + string)
 	}
 }
 
