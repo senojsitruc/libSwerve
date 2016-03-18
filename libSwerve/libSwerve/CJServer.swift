@@ -23,6 +23,7 @@ public protocol CJConnection {
 	
 	var context: Any? { get set }
 	var readHandler: CJConnectionReadHandler? { get set }
+	var closeHandler: ((CJConnection) -> Void)? { get set }
 	
 	func open()
 	func closeConnection()
@@ -143,7 +144,7 @@ extension CJTlsConnection {
 			// explicitly trusted (eg, user clicked always trust) or otherwise valid due to ca
 			if trustResult == UInt32(kSecTrustResultProceed) || trustResult == UInt32(kSecTrustResultUnspecified) {
 				status = SSLHandshake(tlsContext)
-				DLog("SSLHandshake() = \(status)")
+				//DLog("SSLHandshake() = \(status)")
 			}
 				
 			// not trusted for reason other than expiration

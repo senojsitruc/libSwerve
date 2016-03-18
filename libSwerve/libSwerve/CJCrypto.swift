@@ -70,7 +70,6 @@ public final class CJCrypto {
 		// the keychain api is severely screwed up and doesn't actually filter on its own.
 		for identity in (result as! [SecIdentity]) {
 			if SecIdentityGetTypeID() == CFGetTypeID(identity) {
-//			DLog("commonName = \(identity.commonName)")
 				if identity.commonName == label {
 					return identity
 				}

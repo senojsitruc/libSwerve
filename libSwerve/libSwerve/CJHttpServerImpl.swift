@@ -23,7 +23,6 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 	
 	var method: CJHttpMethod
 	var path: String
-//var query: [String: String]()
 	var query: String
 	var version: String
 	var headers = [String: CJHttpHeader]()
@@ -103,8 +102,12 @@ internal class CJHttpServerResponseImpl: CJHttpServerResponse {
 	}
 	
 	func finish() {
-		//connection.resumeAfterWrites()
 		request.cleanup()
+		
+		guard request.headers["Connection"]?.value == "keep-alive" else {
+			connection.close()
+			return
+		}
 	}
 	
 	func close() {
@@ -112,13 +115,18 @@ internal class CJHttpServerResponseImpl: CJHttpServerResponse {
 	}
 	
 	private final func writeHeaders() {
-		connection.write("HTTP/1.1 200 OK\r\n")
+//		connection.write("HTTP/1.1 200 OK\r\n")
 		
-		headers.forEach { _, header in
-			connection.write(header.makeHeaderString())
-		}
+		var headerString = "HTTP/1.1 200 OK\r\n"
+		headers.forEach { _, header in headerString += header.makeHeaderString() }
+		headerString += "\r\n"
+		connection.write(headerString)
 		
-		connection.write("\r\n")
+//		headers.forEach { _, header in
+//			connection.write(header.makeHeaderString())
+//		}
+//		
+//		connection.write("\r\n")
 	}
 	
 }
@@ -141,12 +149,10 @@ private struct PathEqualsHandler: Handler {
 	
 	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool {
 		if request.path == path {
-			DLog("Matched")
 			handler(request, response)
 			return true
 		}
 		else {
-			DLog("No match")
 			return false
 		}
 	}
@@ -169,8 +175,6 @@ private struct PathLikeHandler: Handler {
 			guard let range = path.rangeFromNSRange(result.rangeAtIndex(index)) else { continue }
 			values.append(path.substringWithRange(range))
 		}
-		
-		DLog("Matched")
 		
 		handler(values, request, response)
 		
@@ -206,7 +210,7 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 			_self.tmpdata += String(data: NSData(bytes: data, length: leng), encoding: NSUTF8StringEncoding) ?? ""
 //		_self.tmpdata += String(CString: UnsafePointer<CChar>(data), encoding: NSUTF8StringEncoding) ?? ""
 			
-			DLog("tmpdata [\(_self.tmpdata.characters.count)] = \(_self.tmpdata)")
+			//DLog("tmpdata [\(_self.tmpdata.characters.count)] = \(_self.tmpdata)")
 			
 			// we'll update this index as we run through the string instead of repeatedly substring()'ing
 			var startIndex = _self.tmpdata.startIndex
@@ -247,8 +251,6 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 					
 					// we got the 1st line; let's move on to the header
 					_self.connectionState = .Header
-					
-					DLog("Parsed 1st line")
 				}
 					
 				///
@@ -269,7 +271,6 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 					// we got a blank line; advance to the body (if any)
 					if line.isEmpty == true {
 						_self.connectionState = .Done
-						DLog("Finished reading headers.")
 						break
 					}
 					
@@ -309,17 +310,9 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 		connection.closeConnection()
 	}
 	
-//	func resume() {
-//		connection.resume(waitForWrites: false)
-//	}
-	
 	func write(bytes: UnsafePointer<Void>, size: Int) {
 		connection.write(bytes, size: size, completionHandler: nil)
 	}
-	
-//	func resumeAfterWrites() {
-//		connection.resume(waitForWrites: true)
-//	}
 	
 }
 
@@ -419,7 +412,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 		let fileManager = NSFileManager()
 		
 		self.addHandler(.Get, pathLike: "^\(webPath)/(.*)$") { values, request, response in
-			DLog("values = \(values)")
+			// DLog("values = \(values)")
 			
 			let path = values.count == 2 ? values[1] : ""
 			

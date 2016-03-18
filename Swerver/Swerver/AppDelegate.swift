@@ -24,7 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		/// default handler
 		///
 		httpServer.addHandler(.Get, pathEquals: "/") { request, response in
-			DLog("request = \(request)")
+			//DLog("request = \(request)")
 			
 			CJDispatchBackground() {
 				var response = response

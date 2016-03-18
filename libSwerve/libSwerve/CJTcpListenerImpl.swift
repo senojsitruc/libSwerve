@@ -54,7 +54,7 @@ internal struct CJTcpListenerImpl: CJSocketListener {
 		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		// listen
-		status = listen(sockfd, 100)
+		status = listen(sockfd, 1000)
 		if status == -1 { throw NSError(description: cjstrerror()) }
 		
 		self.sockfd = sockfd
