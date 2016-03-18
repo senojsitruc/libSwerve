@@ -42,7 +42,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		///
 		do {
 			let filePath = NSSearchPathForDirectoriesInDomains(.DownloadsDirectory, .UserDomainMask, true)[0]
-			httpServer.addFileModule(localPath: filePath, webPath: "/Test/", recurses: true)
+			httpServer.addFileModule(localPath: filePath, webPath: "/Downloads/", recurses: true)
 		}
 		
 		///

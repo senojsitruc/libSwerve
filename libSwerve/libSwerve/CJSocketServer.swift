@@ -13,7 +13,7 @@ public protocol CJSocketConnection: CJConnection {
 	var remoteAddr: String { get }
 	var remotePort: UInt16 { get }
 	
-	init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t)
+	init(sockfd: Int32, soaddr: sockaddr_in)
 
 }
 

@@ -16,10 +16,14 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 	var tlsContext: SSLContext?
 	var tlsObject: AnyObject { return self }
 	
+	// wraps a call to the tlsReadCallback() member func in a block that can be passed as a c function
+	// pointer to the ssl system
 	var tlsReadHandler: SSLReadFunc { return { a, b, c in
 		return Unmanaged<CJTlsSocketConnectionImpl>.fromOpaque(COpaquePointer(a)).takeUnretainedValue().tlsReadCallback(a, data: b, dataLength: c)
 	}}
 	
+	// wraps a call to the tlsWriteCallback() member func in a block that can be passed as a c
+	// function pointer to the ssl system
 	var tlsWriteHandler: SSLWriteFunc { return { a, b, c in
 		return Unmanaged<CJTlsSocketConnectionImpl>.fromOpaque(COpaquePointer(a)).takeUnretainedValue().tlsWriteCallback(a, data: b, dataLength: c)
 	}}
@@ -28,63 +32,54 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 	var context: Any?
 	var readHandler: CJConnectionReadHandler?
 	
-	/// CJSocketConnection
+	// CJSocketConnection
 	var remoteAddr: String { return connection.remoteAddr }
 	var remotePort: UInt16 { return connection.remotePort }
 	
 	private var hasStartedTls = false
 	private var tmpdata = dispatch_data_create(nil, 0, nil, nil)
-	private let tmpdataQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.CJSocketTlsConnectionImpl.tmpdataQueue", DISPATCH_QUEUE_SERIAL)
+	private let tmpdataQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJSocketTlsConnectionImpl.tmpdataQueue", DISPATCH_QUEUE_SERIAL)
 	private let connection: CJSocketConnection
 	
-	required init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t) {
-		connection = CJSwerve.tcpConnectionType.init(sockfd: sockfd, soaddr: soaddr, queue: queue)
+	required init(sockfd: Int32, soaddr: sockaddr_in) {
+		connection = CJSwerve.tcpConnectionType.init(sockfd: sockfd, soaddr: soaddr)
 		connection.readHandler = { [weak self, connection, tmpdataQueue] buffer, size in
-			DLog("We got \(size) bytes from the underlying socket.")
+			guard let _self = self else { return }
+			guard let tlsContext = _self.tlsContext else { return }
 			
-			guard let _self = self else { return size }
-			guard let tlsContext = _self.tlsContext else { return size }
-			
-			let dbuffer = UnsafeMutablePointer<Void>.alloc(10000)
-			var processed = 0, processed2 = 0
-			
+			/// append the new data to our buffer; this data is accessible to the ssl system via its read
+			/// callback. since we're can't call the underlying socket object and ask for data, we have to
+			/// to handle buffering here.
 			dispatch_sync(tmpdataQueue) {
 				_self.tmpdata = dispatch_data_create_concat(_self.tmpdata, dispatch_data_create(buffer, size, nil, nil))
 			}
 			
-			DLog("Total buffered data is \(dispatch_data_get_size(_self.tmpdata))")
-			
+			/// continue with ssl handshake if we haven't finished that yet
 			if _self.hasStartedTls == false {
 				if _self.startTLS() == true {
 					_self.hasStartedTls = true
-					DLog("Secure connection established!")
 				}
-				return size
 			}
 			
-			let status = SSLRead(tlsContext, dbuffer, 10000, &processed)
-			
-			if status == errSSLClosedGraceful {
-				DLog("SSL connection closed gracefully.")
-				connection.closeConnection()
-			}
-			else if status == errSSLWouldBlock {
-				DLog("Failed to SSLRead() because errSSLWouldBlock.")
-				connection.closeConnection()
-			}
-			else if processed == 0 {
-				return size
-			}
+			/// we're past the ssl handshake; pass data to the user's read handler
 			else {
+				// ask the ssl system to read some data
+				var processed = 0
+				let dbuffer = UnsafeMutablePointer<Void>.alloc(10000)
+				let status = SSLRead(tlsContext, dbuffer, 10000, &processed)
 				
-				processed2 = _self.readHandler?(UnsafePointer<Void>(dbuffer), processed) ?? 0
-				
-				if processed2 != processed {
-					DLog("We didn't use all of the data! [processed = \(processed), processed2 = \(processed2)]")
+				if status == errSSLClosedGraceful {
+					DLog("SSL connection closed gracefully.")
+					connection.closeConnection()
+				}
+				else if status == errSSLWouldBlock {
+					DLog("Failed to SSLRead() because errSSLWouldBlock.")
+					connection.closeConnection()
+				}
+				else if processed > 0 {
+					_self.readHandler?(UnsafePointer<Void>(dbuffer), processed)
 				}
 			}
-			
-			return size
 		}
 	}
 	
@@ -96,13 +91,13 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 		connection.closeConnection()
 	}
 	
-	func pause() {
-		connection.pause()
-	}
+//	func pause() {
+//		connection.pause()
+//	}
 	
-	func resume(waitForWrites waitForWrites: Bool) {
-		connection.resume(waitForWrites: waitForWrites)
-	}
+//	func resume(waitForWrites waitForWrites: Bool) {
+//		connection.resume(waitForWrites: waitForWrites)
+//	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?) {
 		
@@ -171,6 +166,10 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 	
 }
 
+
+
+
+
 internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	
 	var context: Any?
@@ -181,88 +180,92 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	
 	let sockfd: Int32
 	let soaddr: sockaddr_in
-	let queue: dispatch_queue_t
-	let writeGroup = dispatch_group_create()
+//let queue: dispatch_queue_t
 	let remoteAddr: String
 	let remotePort: UInt16
 	
 	private var stop = false
-	private var paused = false
-	private var tmpdata = dispatch_data_create(nil, 0, nil, nil)
-	private let tmpdataQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.tmpdataQueue", DISPATCH_QUEUE_SERIAL)
+//private var paused = false
+//private var tmpdata = dispatch_data_create(nil, 0, nil, nil)
+//private let tmpdataQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.tmpdataQueue", DISPATCH_QUEUE_SERIAL)
+//private let readQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.readQueue", DISPATCH_QUEUE_SERIAL)
+	private let queue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.queue", DISPATCH_QUEUE_SERIAL)
+//private let writeQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.writeQueue", DISPATCH_QUEUE_SERIAL)
+	private let group = dispatch_group_create()
 	private var bytesIn: size_t = 0
 	
-	required init(sockfd: Int32, soaddr: sockaddr_in, queue: dispatch_queue_t) {
+	required init(sockfd: Int32, soaddr: sockaddr_in /* , queue: dispatch_queue_t */ ) {
 		self.sockfd = sockfd
 		self.soaddr = soaddr
-		self.queue = queue
+//	self.queue = queue
 		self.remoteAddr = CJAddrToString(soaddr.sin_addr, family: soaddr.sin_family) ?? ""
 		self.remotePort = soaddr.sin_port
 		self.indata = dispatch_data_create(nil, 0, nil, nil)
-		
-		self.channel = dispatch_io_create(DISPATCH_IO_STREAM, dispatch_fd_t(sockfd), queue) { error in
-			
-		}
+		self.channel = dispatch_io_create(DISPATCH_IO_STREAM, dispatch_fd_t(sockfd), queue) { error in }
 		
 		DLog("\(remoteAddr):\(remotePort) :: Incoming connection established.")
 	}
 	
 	func open() {
 		dispatch_io_set_low_water(channel, 1)
-		
 		dispatch_io_set_interval(channel, 10000000000, DISPATCH_IO_STRICT_INTERVAL)
-		
-		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, remoteAddr, remotePort, tmpdataQueue] done, data, error in
-			let size = dispatch_data_get_size(data)
-			
-			if size == 0 { return }
-			
-			guard let _self = self else { return }
-			
-			DLog("\(remoteAddr):\(remotePort) :: read bytes = \(dispatch_data_get_size(data)), buffered bytes = \(dispatch_data_get_size(_self.tmpdata))")
-			
-			// check for a stop signal
-			if _self.stop == true { return }
-			
-			// enumerate the memory regions of the data buffer. the handler will tell us how many bytes it
-			// has consumed and we'll subrange() them off the front when we're done
-			if let data = data {
-				_self.bytesIn += size
-				dispatch_sync(tmpdataQueue) {
-					_self.tmpdata = dispatch_data_create_concat(_self.tmpdata, data)
-				}
-				_self.applyData()
-			}
-		}
+		dispatch_io_read(channel, 0, Int.max, queue) { [weak self] done, data, error in self?.handleIncoming(done: done, data: data, error: error) }
+//		dispatch_io_read(channel, 0, Int.max, readQueue) { [weak self, remoteAddr, remotePort, tmpdataQueue] done, data, error in
+//			let size = dispatch_data_get_size(data)
+//			
+//			if size == 0 { return }
+//			
+//			guard let _self = self else { return }
+//			
+//			DLog("\(remoteAddr):\(remotePort) :: read bytes = \(dispatch_data_get_size(data)), buffered bytes = \(dispatch_data_get_size(_self.tmpdata))")
+//			
+//			// check for a stop signal
+//			if _self.stop == true { return }
+//			
+//			// enumerate the memory regions of the data buffer. the handler will tell us how many bytes it
+//			// has consumed and we'll subrange() them off the front when we're done
+//			if let data = data {
+//				_self.bytesIn += size
+//				dispatch_sync(tmpdataQueue) {
+//					_self.tmpdata = dispatch_data_create_concat(_self.tmpdata, data)
+//				}
+//				_self.applyData()
+//			}
+//		}
 	}
 	
 	func closeConnection() {
 		stop = true
+		readHandler = nil
+		
+		// close the read channel
 		dispatch_io_close(channel, 0)
-		close(sockfd)
+		
+		// close the socket after any pending writes have finished; parameterize this behavior?
+		dispatch_group_async(group, queue) { close(self.sockfd) }
 	}
 	
 	///
 	/// the read handler will not be called until after resume() is called
 	///
-	func pause() {
-		paused = true
-	}
+//	func pause() {
+//		paused = true
+//	}
 	
-	func resume(waitForWrites waitForWrites: Bool = false) {
-		if stop == true {
-			DLog("Cannot resume a closed connection.")
-			return
-		}
-		
-		if waitForWrites == true {
-			dispatch_group_async(writeGroup, queue) { self.paused = false; self.applyData() }
-		}
-		else {
-			paused = false
-			dispatch_async(queue) { self.applyData() }
-		}
-	}
+//	func resume(waitForWrites waitForWrites: Bool = false) {
+//		if stop == true {
+//			DLog("Cannot resume a closed connection.")
+//			return
+//		}
+//		
+//		if waitForWrites == true {
+//			dispatch_group_async(writeGroup, queue) { self.paused = false; self.applyData() }
+//		}
+//		else {
+//			paused = false
+//			dispatch_async(queue) { self.applyData() }
+//		}
+//	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?) {
 		DLog("writing bytes = \(size)")
@@ -273,46 +276,61 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			return
 		}
 		
-		dispatch_group_enter(writeGroup)
-		dispatch_io_write(channel, 0, dispatch_data_create(bytes, size, nil, nil), queue) { [writeGroup] done, data, error in
+		dispatch_group_enter(group)
+		dispatch_io_write(channel, 0, dispatch_data_create(bytes, size, nil, nil), queue) { [group] done, data, error in
 			if done == true {
-				DLog("DONE!")
 				completionHandler?(error == 0)
-				dispatch_group_leave(writeGroup)
+				dispatch_group_leave(group)
 			}
 		}
 	}
 	
-	///
-	/// calls the read handler with segments of data (if the connection is not paused)
-	///
-	internal func applyData() {
-		if paused == true { return }
-		
+//	///
+//	/// calls the read handler with segments of data (if the connection is not paused)
+//	///
+//	internal func applyData() {
+//		if paused == true { return }
+//		
+//		guard let handler = readHandler else { return }
+//		
+//		dispatch_sync(tmpdataQueue) {
+//			var lastUsed = 0
+//			
+//			while (true) {
+//				var totalUsed = 0
+//				let totalSize = dispatch_data_get_size(self.tmpdata)
+//				
+//				dispatch_data_apply(self.tmpdata) { region, offset, buffer, size in
+//					lastUsed = handler(buffer, size)
+//					totalUsed += lastUsed
+//					DLog("totalSize = \(totalSize), totalUsed = \(totalUsed), lastUsed = \(lastUsed)")
+//					return lastUsed == size
+//				}
+//				
+//				self.tmpdata = dispatch_data_create_subrange(self.tmpdata, totalUsed, dispatch_data_get_size(self.tmpdata) - totalUsed)
+//				
+//				if lastUsed == 0 || totalUsed == totalSize {
+//					DLog("Used: \(totalUsed); Remaining: \(dispatch_data_get_size(self.tmpdata))")
+//					break
+//				}
+//			}
+//		}
+//	}
+	
+	private final func handleIncoming(done done: Bool, data: dispatch_data_t, error: Int32) {
 		guard let handler = readHandler else { return }
+		let size = dispatch_data_get_size(data)
 		
-		dispatch_sync(tmpdataQueue) {
-			var lastUsed = 0
-			
-			while (true) {
-				var totalUsed = 0
-				let totalSize = dispatch_data_get_size(self.tmpdata)
-				
-				dispatch_data_apply(self.tmpdata) { region, offset, buffer, size in
-					lastUsed = handler(buffer, size)
-					totalUsed += lastUsed
-					DLog("totalSize = \(totalSize), totalUsed = \(totalUsed), lastUsed = \(lastUsed)")
-					return lastUsed == size
-				}
-				
-				self.tmpdata = dispatch_data_create_subrange(self.tmpdata, totalUsed, dispatch_data_get_size(self.tmpdata) - totalUsed)
-				
-				if lastUsed == 0 || totalUsed == totalSize {
-					DLog("Used: \(totalUsed); Remaining: \(dispatch_data_get_size(self.tmpdata))")
-					break
-				}
-			}
-		}
+		if size == 0 { return }
+		
+		DLog("\(remoteAddr):\(remotePort) :: read bytes = \(dispatch_data_get_size(data))")
+		
+		// check for a stop signal
+		if stop == true { return }
+		
+		bytesIn += size
+		
+		dispatch_data_apply(data) { region, offset, buffer, size in handler(buffer, size); return true }
 	}
 	
 }
@@ -347,8 +365,14 @@ internal class CJTlsServerImpl: CJTcpServerImpl {
 	private var tlsContext: SSLContext?
 	
 	override func start() throws {
-		tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.tlsKey-001")
-		DLog("tlsIdentity = \(tlsIdentity)")
+		//CJCrypto.generateKeyPair(label: "us.curtisjones.libSwerve.tlsKey-002")
+		
+//	tlsIdentity = SecIdentity.create(numberOfBits: 4096, error: nil)
+		tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.001")
+//	tlsIdentity = SecIdentity.myIdentity()
+		
+		DLog("tlsIdentity = \(tlsIdentity) | \(tlsIdentity?.commonName)")
+		
 		try super.start()
 	}
 	
@@ -381,7 +405,7 @@ internal class CJTcpServerImpl: CJSocketServer {
 	private var connections = Set<Connection>()
 	
 	private var listener: CJSocketListener?
-	private let socketQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJHttpServerImpl.socketQueue", DISPATCH_QUEUE_CONCURRENT)
+//private let socketQueue = dispatch_queue_create("us.curtisjones.libSwerve.CJHttpServerImpl.socketQueue", DISPATCH_QUEUE_CONCURRENT)
 	
 	required init(port: UInt16) {
 		serverPort = port
@@ -402,7 +426,7 @@ internal class CJTcpServerImpl: CJSocketServer {
 	}
 	
 	func accept(sockfd: Int32, soaddr: sockaddr_in) {
-		let tcpConnection = self.connectionType().init(sockfd: sockfd, soaddr: soaddr, queue: socketQueue)
+		let tcpConnection = self.connectionType().init(sockfd: sockfd, soaddr: soaddr)
 		let connection = Connection(connection: tcpConnection)
 		connections.insert(connection)
 		startConnection(connection)

@@ -35,7 +35,32 @@
 		F98212E91C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */; };
 		F98212EB1C990F2C0086F948 /* CJSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212EA1C990F2C0086F948 /* CJSocketServer.swift */; };
 		F98212EC1C990F2C0086F948 /* CJSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212EA1C990F2C0086F948 /* CJSocketServer.swift */; };
+		F9BF678C1C9BCF4D004AB3EE /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F9BF67891C9BCF36004AB3EE /* libcrypto.a */; };
+		F9BF67921C9BD3CF004AB3EE /* DeviceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BF67911C9BD3CF004AB3EE /* DeviceId.swift */; };
+		F9BF67971C9BD5A5004AB3EE /* NSData+SHA256Digest.h in Headers */ = {isa = PBXBuildFile; fileRef = F9BF67951C9BD5A5004AB3EE /* NSData+SHA256Digest.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9BF67981C9BD5A5004AB3EE /* NSData+SHA256Digest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9BF67961C9BD5A5004AB3EE /* NSData+SHA256Digest.m */; };
+		F9BF679D1C9BD604004AB3EE /* OpenSSLCertificate.h in Headers */ = {isa = PBXBuildFile; fileRef = F9BF67991C9BD604004AB3EE /* OpenSSLCertificate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9BF679E1C9BD604004AB3EE /* OpenSSLCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F9BF679A1C9BD604004AB3EE /* OpenSSLCertificate.m */; };
+		F9BF679F1C9BD604004AB3EE /* SecCertificate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BF679B1C9BD604004AB3EE /* SecCertificate.swift */; };
+		F9BF67A01C9BD604004AB3EE /* SecIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BF679C1C9BD604004AB3EE /* SecIdentity.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F9BF67881C9BCF36004AB3EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F9BF67841C9BCF36004AB3EE /* openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9069D28C0FCE659A0042E34C;
+			remoteInfo = crypto;
+		};
+		F9BF678A1C9BCF48004AB3EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F9BF67841C9BCF36004AB3EE /* openssl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 9069D28B0FCE659A0042E34C;
+			remoteInfo = crypto;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		F930CEE61C9A310C0051675B /* CJHexDump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CJHexDump.c; sourceTree = "<group>"; };
@@ -56,6 +81,16 @@
 		F98212BA1C98CBCD0086F948 /* liblibSwerve.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibSwerve.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTcpServerImpl.swift; sourceTree = "<group>"; };
 		F98212EA1C990F2C0086F948 /* CJSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJSocketServer.swift; sourceTree = "<group>"; };
+		F9BF677F1C9BCD86004AB3EE /* libssl.0.9.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libssl.0.9.8.tbd; path = usr/lib/libssl.0.9.8.tbd; sourceTree = SDKROOT; };
+		F9BF67811C9BCD90004AB3EE /* libcrypto.0.9.8.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcrypto.0.9.8.tbd; path = usr/lib/libcrypto.0.9.8.tbd; sourceTree = SDKROOT; };
+		F9BF67841C9BCF36004AB3EE /* openssl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openssl.xcodeproj; path = Extern/OpenSSL/openssl.xcodeproj; sourceTree = "<group>"; };
+		F9BF67911C9BD3CF004AB3EE /* DeviceId.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceId.swift; path = Extern/Pulse/DeviceId.swift; sourceTree = "<group>"; };
+		F9BF67951C9BD5A5004AB3EE /* NSData+SHA256Digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+SHA256Digest.h"; path = "Extern/Pulse/NSData+SHA256Digest.h"; sourceTree = "<group>"; };
+		F9BF67961C9BD5A5004AB3EE /* NSData+SHA256Digest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+SHA256Digest.m"; path = "Extern/Pulse/NSData+SHA256Digest.m"; sourceTree = "<group>"; };
+		F9BF67991C9BD604004AB3EE /* OpenSSLCertificate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenSSLCertificate.h; path = Extern/Pulse/OpenSSLCertificate.h; sourceTree = "<group>"; };
+		F9BF679A1C9BD604004AB3EE /* OpenSSLCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OpenSSLCertificate.m; path = Extern/Pulse/OpenSSLCertificate.m; sourceTree = "<group>"; };
+		F9BF679B1C9BD604004AB3EE /* SecCertificate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SecCertificate.swift; path = Extern/Pulse/SecCertificate.swift; sourceTree = "<group>"; };
+		F9BF679C1C9BD604004AB3EE /* SecIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SecIdentity.swift; path = Extern/Pulse/SecIdentity.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9BF678C1C9BCF4D004AB3EE /* libcrypto.a in Frameworks */,
 				F930CEF01C9AEAEE0051675B /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,6 +124,8 @@
 		F98212681C98965D0086F948 = {
 			isa = PBXGroup;
 			children = (
+				F9BF67811C9BCD90004AB3EE /* libcrypto.0.9.8.tbd */,
+				F9BF677F1C9BCD86004AB3EE /* libssl.0.9.8.tbd */,
 				F98212741C98965D0086F948 /* libSwerve */,
 				F98212731C98965D0086F948 /* Products */,
 			);
@@ -106,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				F98212A01C9898E00086F948 /* CJSwerve.swift */,
+				F9BF677A1C9BCCD1004AB3EE /* Extern */,
 				F98212A71C989E890086F948 /* Impl */,
 				F98212A61C989E7C0086F948 /* Interface */,
 				F98212B21C98B4810086F948 /* Miscellaneous */,
@@ -157,6 +196,45 @@
 			name = Miscellaneous;
 			sourceTree = "<group>";
 		};
+		F9BF677A1C9BCCD1004AB3EE /* Extern */ = {
+			isa = PBXGroup;
+			children = (
+				F9BF67901C9BD3BB004AB3EE /* Pulse */,
+				F9BF67831C9BCF2A004AB3EE /* OpenSSL */,
+			);
+			name = Extern;
+			sourceTree = "<group>";
+		};
+		F9BF67831C9BCF2A004AB3EE /* OpenSSL */ = {
+			isa = PBXGroup;
+			children = (
+				F9BF67841C9BCF36004AB3EE /* openssl.xcodeproj */,
+			);
+			name = OpenSSL;
+			sourceTree = "<group>";
+		};
+		F9BF67851C9BCF36004AB3EE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F9BF67891C9BCF36004AB3EE /* libcrypto.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F9BF67901C9BD3BB004AB3EE /* Pulse */ = {
+			isa = PBXGroup;
+			children = (
+				F9BF67991C9BD604004AB3EE /* OpenSSLCertificate.h */,
+				F9BF679A1C9BD604004AB3EE /* OpenSSLCertificate.m */,
+				F9BF679B1C9BD604004AB3EE /* SecCertificate.swift */,
+				F9BF679C1C9BD604004AB3EE /* SecIdentity.swift */,
+				F9BF67911C9BD3CF004AB3EE /* DeviceId.swift */,
+				F9BF67951C9BD5A5004AB3EE /* NSData+SHA256Digest.h */,
+				F9BF67961C9BD5A5004AB3EE /* NSData+SHA256Digest.m */,
+			);
+			name = Pulse;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -165,6 +243,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F98212761C98965D0086F948 /* libSwerve.h in Headers */,
+				F9BF679D1C9BD604004AB3EE /* OpenSSLCertificate.h in Headers */,
+				F9BF67971C9BD5A5004AB3EE /* NSData+SHA256Digest.h in Headers */,
 				F930CEEA1C9A310C0051675B /* CJHexDump.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,10 +268,12 @@
 				F982126E1C98965D0086F948 /* Frameworks */,
 				F982126F1C98965D0086F948 /* Headers */,
 				F98212701C98965D0086F948 /* Resources */,
+				F9BF678D1C9BD16D004AB3EE /* ShellScript */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				F9BF678B1C9BCF48004AB3EE /* PBXTargetDependency */,
 			);
 			name = "libSwerve (Dynamic)";
 			productName = libSwerve;
@@ -242,6 +324,12 @@
 			mainGroup = F98212681C98965D0086F948;
 			productRefGroup = F98212731C98965D0086F948 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = F9BF67851C9BCF36004AB3EE /* Products */;
+					ProjectRef = F9BF67841C9BCF36004AB3EE /* openssl.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				F98212711C98965D0086F948 /* libSwerve (Dynamic) */,
@@ -249,6 +337,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		F9BF67891C9BCF36004AB3EE /* libcrypto.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcrypto.a;
+			remoteRef = F9BF67881C9BCF36004AB3EE /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		F98212701C98965D0086F948 /* Resources */ = {
@@ -259,6 +357,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F9BF678D1C9BD16D004AB3EE /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "exit 0";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F982126D1C98965D0086F948 /* Sources */ = {
@@ -273,9 +387,14 @@
 				F98212AC1C98A03B0086F948 /* CJServer.swift in Sources */,
 				F930CEE81C9A310C0051675B /* CJHexDump.c in Sources */,
 				F930CEED1C9AE6E90051675B /* CJGlobal.swift in Sources */,
+				F9BF679E1C9BD604004AB3EE /* OpenSSLCertificate.m in Sources */,
+				F9BF67921C9BD3CF004AB3EE /* DeviceId.swift in Sources */,
 				F98212A51C989B1A0086F948 /* CJHttpServer.swift in Sources */,
+				F9BF67981C9BD5A5004AB3EE /* NSData+SHA256Digest.m in Sources */,
 				F98212AA1C989ED20086F948 /* CJServerImpl.swift in Sources */,
+				F9BF679F1C9BD604004AB3EE /* SecCertificate.swift in Sources */,
 				F98212EB1C990F2C0086F948 /* CJSocketServer.swift in Sources */,
+				F9BF67A01C9BD604004AB3EE /* SecIdentity.swift in Sources */,
 				F930CEF51C9AED420051675B /* CJCrypto.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,6 +419,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F9BF678B1C9BCF48004AB3EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = crypto;
+			targetProxy = F9BF678A1C9BCF48004AB3EE /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		F98212781C98965D0086F948 /* Debug */ = {
@@ -400,6 +527,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = "\"$(OBJROOT)/openssl.build/openssl/include\"";
 				INFOPLIST_FILE = libSwerve/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
@@ -421,6 +549,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = "\"$(OBJROOT)/openssl.build/openssl/include\"";
 				INFOPLIST_FILE = libSwerve/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";

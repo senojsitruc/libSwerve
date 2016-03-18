@@ -28,7 +28,11 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 	var version: String
 	var headers = [String: CJHttpHeader]()
 	
-	init(methodName: String, path: String, version: String) {
+	private let completionHandler: (() -> Void)?
+	
+	init(methodName: String, path: String, version: String, completionHandler: (() -> Void)?) {
+		self.completionHandler = completionHandler
+		
 		if methodName == "GET" {
 			method = .Get
 		}
@@ -64,6 +68,12 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 		headers[header.name] = existingHeader
 	}
 	
+	///
+	/// called by the response when the response is complete
+	///
+	func cleanup() {
+		completionHandler?()
+	}
 }
 
 
@@ -76,9 +86,11 @@ internal class CJHttpServerResponseImpl: CJHttpServerResponse {
 	
 	private var firstWrite = true
 	private let connection: CJHttpConnection
+	private let request: CJHttpServerRequest
 	
-	required init(connection: CJHttpConnection) {
+	required init(connection: CJHttpConnection, request: CJHttpServerRequest) {
 		self.connection = connection
+		self.request = request
 	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int) {
@@ -91,7 +103,8 @@ internal class CJHttpServerResponseImpl: CJHttpServerResponse {
 	}
 	
 	func finish() {
-		connection.resumeAfterWrites()
+		//connection.resumeAfterWrites()
+		request.cleanup()
 	}
 	
 	func close() {
@@ -178,14 +191,16 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 	
 	private var tmpdata = ""
 	private var request: CJHttpServerRequest?
+	private let queue = dispatch_queue_create("us.curtisjones.libSwerve.CJHttpConnectionImpl.queue", DISPATCH_QUEUE_SERIAL)
+	private let group = dispatch_group_create()
 	
 	required init(connection: CJConnection, requestHandler: CJHttpConnectionRequestHandler) {
 		self.requestHandler = requestHandler
 		self.connection = connection
-		self.connection.readHandler = { [weak self] data, leng in
-			guard let _self = self else { return 0 }
+		self.connection.readHandler = { [weak self, queue, group] data, leng in
+			guard let _self = self else { return }
 			
-//		hexdump(UnsafePointer<UInt8>(data), Int32(leng))
+			//hexdump(UnsafePointer<UInt8>(data), Int32(leng))
 			
 			// concatenate any buffered data with this new data
 			_self.tmpdata += String(data: NSData(bytes: data, length: leng), encoding: NSUTF8StringEncoding) ?? ""
@@ -220,8 +235,12 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 						break
 					}
 					
-					// create a new request object with the 1st line of the request
-					_self.request = CJSwerve.httpRequestType.init(methodName: parts[0], path: parts[1], version: parts[2])
+					// create a new request object with the 1st line of the request. when the request is
+					// finished, the completion handler were update the group. we do not allow requests to
+					// process concurrently, but we do queue them up so they don't sit on the socket
+					_self.request = CJSwerve.httpRequestType.init(methodName: parts[0], path: parts[1], version: parts[2]) {
+						dispatch_group_leave(group)
+					}
 					
 					// trim the line from the buffer (including the newline characters)
 					startIndex = nlrange.endIndex
@@ -270,18 +289,19 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 			/// Done |
 			///
 			if _self.connectionState == .Done {
-				DLog("Handling request")
+				let request = _self.request!
+				
 				_self.connectionState = .None
-				_self.connection.pause()
-				_self.requestHandler(_self, _self.request!)
 				_self.request = nil
+				
+				dispatch_async(queue) {
+					dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
+					dispatch_group_enter(group)
+					requestHandler(_self, request)
+				}
 			}
 		
 			_self.tmpdata = _self.tmpdata.substringFromIndex(startIndex)
-			
-			DLog("Return used length = \(leng)")
-			
-			return leng
 		}
 	}
 	
@@ -289,17 +309,17 @@ internal class CJHttpConnectionImpl: CJHttpConnection {
 		connection.closeConnection()
 	}
 	
-	func resume() {
-		connection.resume(waitForWrites: false)
-	}
+//	func resume() {
+//		connection.resume(waitForWrites: false)
+//	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int) {
 		connection.write(bytes, size: size, completionHandler: nil)
 	}
 	
-	func resumeAfterWrites() {
-		connection.resume(waitForWrites: true)
-	}
+//	func resumeAfterWrites() {
+//		connection.resume(waitForWrites: true)
+//	}
 	
 }
 
@@ -325,14 +345,14 @@ internal class CJHttpServerImpl: CJHttpServer {
 			
 			let requestHandler: CJHttpConnectionRequestHandler = { [weak self] connection, request in
 				var matched = false
-				let response = CJSwerve.httpResponseType.init(connection: connection)
+				let response = CJSwerve.httpResponseType.init(connection: connection, request: request)
 				
 				for handler in self?.handlers ?? [] {
 					if handler.matches(connection, request, response) == true { matched = true; break }
 				}
 				
 				if matched == false {
-					DLog("No handler match found; closing connection")
+					DLog("No handler match found; closing connection [\(request)]")
 					connection.close()
 				}
 			}
@@ -402,6 +422,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 			
 			// we expect two match values: the full string and the matched subpath
 			if values.count != 2 {
+				response.finish()
 				response.close()
 				return
 			}
@@ -410,6 +431,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 			
 			// prevent the user from escaping the base directory
 			if path.rangeOfString("..") != nil {
+				response.finish()
 				response.close()
 				return
 			}
@@ -426,6 +448,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 				
 				// close the connection if the target file doesn't exist
 				guard let fileData = NSData(contentsOfFile: filePath) else {
+					response.finish()
 					response.close()
 					return
 				}

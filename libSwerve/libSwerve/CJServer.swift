@@ -26,8 +26,8 @@ public protocol CJConnection {
 	
 	func open()
 	func closeConnection()
-	func pause()
-	func resume(waitForWrites waitForWrites: Bool)
+//func pause()
+//func resume(waitForWrites waitForWrites: Bool)
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?)
 	func write(data: NSData, completionHandler: ((Bool) -> Void)?)
@@ -166,7 +166,7 @@ public protocol CJTlsSocketConnection: CJTlsConnection, CJSocketConnection {
 	
 }
 
-public typealias CJConnectionReadHandler = (UnsafePointer<Void>, Int) -> Int
+public typealias CJConnectionReadHandler = (UnsafePointer<Void>, Int) -> Void
 
 public typealias CJServerAcceptHandler = (CJConnection) -> Void
 

@@ -75,8 +75,8 @@ public protocol CJHttpConnection {
 	init(connection: CJConnection, requestHandler: CJHttpConnectionRequestHandler)
 	
 	func close()
-	func resume()
-	func resumeAfterWrites()
+//func resume()
+//func resumeAfterWrites()
 	
 	func write(bytes: UnsafePointer<Void>, size: Int)
 	func write(data: NSData)
@@ -114,9 +114,10 @@ public protocol CJHttpServerRequest {
 	
 	var contentLength: Int? { get set }
 	
-	init(methodName: String, path: String, version: String)
+	init(methodName: String, path: String, version: String, completionHandler: (() -> Void)?)
 	
 	mutating func addHeader(header: CJHttpHeader)
+	func cleanup()
 	
 }
 
@@ -149,7 +150,7 @@ public protocol CJHttpServerResponse {
 	
 	var headers: [String: CJHttpHeader] { get set }
 	
-	init(connection: CJHttpConnection)
+	init(connection: CJHttpConnection, request: CJHttpServerRequest)
 	
 	mutating func addHeader(header: CJHttpHeader)
 	mutating func addHeader(name: String, value: AnyObject)
