@@ -17,6 +17,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	var server: CJHttpServer!
 
 	func applicationDidFinishLaunching(aNotification: NSNotification) {
+		//CJCrypto.generateKeyPair(label: "us.curtisjones.libSwerve.tlsKey-002")
+		//tlsIdentity = SecIdentity.create(numberOfBits: 4096, error: nil)
+		//if let identity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.001") {
+		//	CJCrypto.setupTLS(identity)
+		//}
+		
 		let tcpServer = CJSwerve.tcpServerType.init(port: 8080)
 		var httpServer = CJSwerve.httpServerType.init(server: tcpServer)
 		

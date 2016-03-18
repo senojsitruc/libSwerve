@@ -11,7 +11,7 @@ import Security
 
 public final class CJCrypto {
 	
-	internal var identity: SecIdentity?
+	internal static var identity: SecIdentity?
 	
 	///
 	/// Generates a new key pair. If permanent, the key pair is stored in the default keychain. To
@@ -48,7 +48,7 @@ public final class CJCrypto {
 	///
 	/// Returns the idetnity matching the specified label (from the keychain).
 	///
-	internal class func identityWithLabel(label: String) -> SecIdentity? {
+	public class func identityWithLabel(label: String) -> SecIdentity? {
 		var query = [String: AnyObject]()
 		var result: AnyObject?
 		var status: OSStatus = 0
@@ -169,13 +169,13 @@ public final class CJCrypto {
 	///
 	/// Setup TLS using the given public / private key pair.
 	///
-	final func setupTLS(publicKey: SecKey, privateKey: SecKey) -> Bool {
+	public class func setupTLS(publicKey: SecKey, privateKey: SecKey) -> Bool {
 		guard let identity = CJCrypto.identityWithKeyPair(publicKey, privateKey: privateKey) else {
 			DLog("Could not create identity for the given key pair.")
 			return false
 		}
 		
-		self.identity = identity
+		CJCrypto.identity = identity
 		
 		return true
 	}
@@ -183,13 +183,13 @@ public final class CJCrypto {
 	///
 	/// Setup TLS using a certificate in the keychain with the given label.
 	///
-	final func setupTLS(label: String) -> Bool {
+	public class func setupTLS(label: String) -> Bool {
 		guard let identity = CJCrypto.identityWithLabel(label) else {
 			DLog("Could not find identity [label = \(label)]")
 			return false
 		}
 		
-		self.identity = identity
+		CJCrypto.identity = identity
 		
 		return true
 	}
@@ -197,180 +197,22 @@ public final class CJCrypto {
 	///
 	/// Setup TLS using a certificate in the given PKCS12 file.
 	///
-	final func setupTLS(pkcs12FilePath filePath: String, passphrase: String) -> Bool {
+	public class func setupTLS(pkcs12FilePath filePath: String, passphrase: String) -> Bool {
 		guard let identity = CJCrypto.identityFromFile(pkcs12FilePath: filePath, passphrase: passphrase) else {
 			DLog("Could not get identity [filePath = \(filePath)]")
 			return false
 		}
 		
-		self.identity = identity
+		CJCrypto.identity = identity
 		
 		return true
 	}
 	
-}
-
-
-
-
-
-///
-/// https://github.com/henrinormak/Heimdall
-///
-/*
-private extension NSData {
-	
-	convenience init(modulus: NSData, exponent: NSData) {
-		// Make sure neither the modulus nor the exponent start with a null byte
-		var modulusBytes = [CUnsignedChar](UnsafeBufferPointer<CUnsignedChar>(start: UnsafePointer<CUnsignedChar>(modulus.bytes), count: modulus.length / sizeof(CUnsignedChar)))
-		let exponentBytes = [CUnsignedChar](UnsafeBufferPointer<CUnsignedChar>(start: UnsafePointer<CUnsignedChar>(exponent.bytes), count: exponent.length / sizeof(CUnsignedChar)))
-		
-		// Make sure modulus starts with a 0x00
-		if let prefix = modulusBytes.first where prefix != 0x00 {
-			modulusBytes.insert(0x00, atIndex: 0)
-		}
-		
-		// Lengths
-		let modulusLengthOctets = modulusBytes.count.encodedOctets()
-		let exponentLengthOctets = exponentBytes.count.encodedOctets()
-		
-		// Total length is the sum of components + types
-		let totalLengthOctets = (modulusLengthOctets.count + modulusBytes.count + exponentLengthOctets.count + exponentBytes.count + 2).encodedOctets()
-		
-		// Combine the two sets of data into a single container
-		var builder: [CUnsignedChar] = []
-		let data = NSMutableData()
-		
-		// Container type and size
-		builder.append(0x30)
-		builder.appendContentsOf(totalLengthOctets)
-		data.appendBytes(builder, length: builder.count)
-		builder.removeAll(keepCapacity: false)
-		
-		// Modulus
-		builder.append(0x02)
-		builder.appendContentsOf(modulusLengthOctets)
-		data.appendBytes(builder, length: builder.count)
-		builder.removeAll(keepCapacity: false)
-		data.appendBytes(modulusBytes, length: modulusBytes.count)
-		
-		// Exponent
-		builder.append(0x02)
-		builder.appendContentsOf(exponentLengthOctets)
-		data.appendBytes(builder, length: builder.count)
-		data.appendBytes(exponentBytes, length: exponentBytes.count)
-		
-		self.init(data: data)
-	}
-	
-	func splitIntoComponents() -> (modulus: NSData, exponent: NSData)? {
-		// Get the bytes from the keyData
-		let pointer = UnsafePointer<CUnsignedChar>(self.bytes)
-		let keyBytes = [CUnsignedChar](UnsafeBufferPointer<CUnsignedChar>(start:pointer, count:self.length / sizeof(CUnsignedChar)))
-		
-		// Assumption is that the data is in DER encoding
-		// If we can parse it, then return successfully
-		var i: NSInteger = 0
-		
-		// First there should be an ASN.1 SEQUENCE
-		if keyBytes[0] != 0x30 {
-			return nil
-		} else {
-			i += 1
-		}
-		
-		// Total length of the container
-		if let _ = NSInteger(octetBytes: keyBytes, startIdx: &i) {
-			// First component is the modulus
-			if keyBytes[i++] == 0x02, let modulusLength = NSInteger(octetBytes: keyBytes, startIdx: &i) {
-				let modulus = self.subdataWithRange(NSMakeRange(i, modulusLength))
-				i += modulusLength
-				
-				// Second should be the exponent
-				if keyBytes[i++] == 0x02, let exponentLength = NSInteger(octetBytes: keyBytes, startIdx: &i) {
-					let exponent = self.subdataWithRange(NSMakeRange(i, exponentLength))
-					i += exponentLength
-					
-					return (modulus, exponent)
-				}
-			}
-		}
-		
-		return nil
-	}
-	
-	func dataByPrependingX509Header() -> NSData {
-		let result = NSMutableData()
-		
-		let encodingLength: Int = (self.length + 1).encodedOctets().count
-		let OID: [CUnsignedChar] = [0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
-		                            0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00]
-		
-		var builder: [CUnsignedChar] = []
-		
-		// ASN.1 SEQUENCE
-		builder.append(0x30)
-		
-		// Overall size, made of OID + bitstring encoding + actual key
-		let size = OID.count + 2 + encodingLength + self.length
-		let encodedSize = size.encodedOctets()
-		builder.appendContentsOf(encodedSize)
-		result.appendBytes(builder, length: builder.count)
-		result.appendBytes(OID, length: OID.count)
-		builder.removeAll(keepCapacity: false)
-		
-		builder.append(0x03)
-		builder.appendContentsOf((self.length + 1).encodedOctets())
-		builder.append(0x00)
-		result.appendBytes(builder, length: builder.count)
-		
-		// Actual key bytes
-		result.appendData(self)
-		
-		return result as NSData
-	}
-	
-	func dataByStrippingX509Header() -> NSData {
-		var bytes = [CUnsignedChar](count: self.length, repeatedValue: 0)
-		self.getBytes(&bytes, length:self.length)
-		
-		var range = NSRange(location: 0, length: self.length)
-		var offset = 0
-		
-		// ASN.1 Sequence
-		if bytes[offset++] == 0x30 {
-			// Skip over length
-			let _ = NSInteger(octetBytes: bytes, startIdx: &offset)
-			
-			let OID: [CUnsignedChar] = [0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
-			                            0xf7, 0x0d, 0x01, 0x01, 0x01, 0x05, 0x00]
-			let slice: [CUnsignedChar] = Array(bytes[offset..<(offset + OID.count)])
-			
-			if slice == OID {
-				offset += OID.count
-				
-				// Type
-				if bytes[offset++] != 0x03 {
-					return self
-				}
-				
-				// Skip over the contents length field
-				let _ = NSInteger(octetBytes: bytes, startIdx: &offset)
-				
-				// Contents should be separated by a null from the header
-				if bytes[offset++] != 0x00 {
-					return self
-				}
-				
-				range.location += offset
-				range.length -= offset
-			} else {
-				return self
-			}
-		}
-		
-		return self.subdataWithRange(range)
+	///
+	///
+	///
+	public class func setupTLS(identity: SecIdentity) {
+		CJCrypto.identity = identity
 	}
 	
 }
-*/

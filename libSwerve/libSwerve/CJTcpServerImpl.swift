@@ -330,11 +330,7 @@ internal class CJTlsServerImpl: CJTcpServerImpl {
 	private var tlsContext: SSLContext?
 	
 	override func start() throws {
-		//CJCrypto.generateKeyPair(label: "us.curtisjones.libSwerve.tlsKey-002")
-		
-//	tlsIdentity = SecIdentity.create(numberOfBits: 4096, error: nil)
-		tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.001")
-		
+		tlsIdentity = CJCrypto.identity
 		DLog("tlsIdentity = \(tlsIdentity) | \(tlsIdentity?.commonName)")
 		
 		try super.start()
