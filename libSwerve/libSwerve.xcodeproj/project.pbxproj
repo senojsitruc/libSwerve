@@ -72,6 +72,7 @@
 		F930CEF41C9AED420051675B /* CJCrypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJCrypto.swift; sourceTree = "<group>"; };
 		F949259E1C9CB768009BD380 /* PGPortMapperBonjour.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PGPortMapperBonjour.h; sourceTree = "<group>"; };
 		F949259F1C9CB768009BD380 /* PGPortMapperBonjour.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PGPortMapperBonjour.m; sourceTree = "<group>"; };
+		F94925A21C9D57A4009BD380 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../README.md; sourceTree = "<group>"; };
 		F98212721C98965D0086F948 /* libSwerve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libSwerve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F98212751C98965D0086F948 /* libSwerve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libSwerve.h; sourceTree = "<group>"; };
 		F98212771C98965D0086F948 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -178,6 +179,7 @@
 		F98212A81C989EAC0086F948 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F94925A21C9D57A4009BD380 /* README.md */,
 				F98212751C98965D0086F948 /* libSwerve.h */,
 				F98212771C98965D0086F948 /* Info.plist */,
 			);
