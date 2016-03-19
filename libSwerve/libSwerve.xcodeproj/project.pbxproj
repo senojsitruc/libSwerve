@@ -22,16 +22,17 @@
 		F94925A61C9D6DCF009BD380 /* CJHttpServerRequestImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94925A51C9D6DCF009BD380 /* CJHttpServerRequestImpl.swift */; };
 		F94925A81C9D6DD9009BD380 /* CJHttpServerResponseImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94925A71C9D6DD9009BD380 /* CJHttpServerResponseImpl.swift */; };
 		F94925AA1C9D6EF3009BD380 /* CJHttpBinaryConnectionImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94925A91C9D6EF3009BD380 /* CJHttpBinaryConnectionImpl.swift */; };
+		F94925AE1C9D705E009BD380 /* CJTlsSocketConnectionImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94925AD1C9D705E009BD380 /* CJTlsSocketConnectionImpl.swift */; };
+		F94925B01C9D708F009BD380 /* CJTcpSocketConnectionImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94925AF1C9D708F009BD380 /* CJTcpSocketConnectionImpl.swift */; };
+		F94925B21C9D70E2009BD380 /* CJTlsServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94925B11C9D70E2009BD380 /* CJTlsServerImpl.swift */; };
 		F98212761C98965D0086F948 /* libSwerve.h in Headers */ = {isa = PBXBuildFile; fileRef = F98212751C98965D0086F948 /* libSwerve.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F98212A11C9898E00086F948 /* CJSwerve.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A01C9898E00086F948 /* CJSwerve.swift */; };
 		F98212A31C989A820086F948 /* CJHttpServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A21C989A820086F948 /* CJHttpServerImpl.swift */; };
 		F98212A51C989B1A0086F948 /* CJHttpServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A41C989B1A0086F948 /* CJHttpServer.swift */; };
-		F98212AA1C989ED20086F948 /* CJServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A91C989ED20086F948 /* CJServerImpl.swift */; };
 		F98212AC1C98A03B0086F948 /* CJServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212AB1C98A03B0086F948 /* CJServer.swift */; };
 		F98212B11C98AD6C0086F948 /* CJTcpListenerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */; };
 		F98212B41C98B4940086F948 /* CJExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212B31C98B4940086F948 /* CJExtensions.swift */; };
 		F98212C91C98CC4B0086F948 /* CJSwerve.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A01C9898E00086F948 /* CJSwerve.swift */; };
-		F98212CA1C98CC4B0086F948 /* CJServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A91C989ED20086F948 /* CJServerImpl.swift */; };
 		F98212CB1C98CC4B0086F948 /* CJHttpServerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212A21C989A820086F948 /* CJHttpServerImpl.swift */; };
 		F98212CC1C98CC4B0086F948 /* CJTcpListenerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */; };
 		F98212CD1C98CC4B0086F948 /* CJServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98212AB1C98A03B0086F948 /* CJServer.swift */; };
@@ -81,13 +82,15 @@
 		F94925A51C9D6DCF009BD380 /* CJHttpServerRequestImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJHttpServerRequestImpl.swift; sourceTree = "<group>"; };
 		F94925A71C9D6DD9009BD380 /* CJHttpServerResponseImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJHttpServerResponseImpl.swift; sourceTree = "<group>"; };
 		F94925A91C9D6EF3009BD380 /* CJHttpBinaryConnectionImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJHttpBinaryConnectionImpl.swift; sourceTree = "<group>"; };
+		F94925AD1C9D705E009BD380 /* CJTlsSocketConnectionImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTlsSocketConnectionImpl.swift; sourceTree = "<group>"; };
+		F94925AF1C9D708F009BD380 /* CJTcpSocketConnectionImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTcpSocketConnectionImpl.swift; sourceTree = "<group>"; };
+		F94925B11C9D70E2009BD380 /* CJTlsServerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTlsServerImpl.swift; sourceTree = "<group>"; };
 		F98212721C98965D0086F948 /* libSwerve.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libSwerve.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F98212751C98965D0086F948 /* libSwerve.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libSwerve.h; sourceTree = "<group>"; };
 		F98212771C98965D0086F948 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F98212A01C9898E00086F948 /* CJSwerve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJSwerve.swift; sourceTree = "<group>"; };
 		F98212A21C989A820086F948 /* CJHttpServerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJHttpServerImpl.swift; sourceTree = "<group>"; };
 		F98212A41C989B1A0086F948 /* CJHttpServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJHttpServer.swift; sourceTree = "<group>"; };
-		F98212A91C989ED20086F948 /* CJServerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJServerImpl.swift; sourceTree = "<group>"; };
 		F98212AB1C98A03B0086F948 /* CJServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJServer.swift; sourceTree = "<group>"; };
 		F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJTcpListenerImpl.swift; sourceTree = "<group>"; };
 		F98212B31C98B4940086F948 /* CJExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJExtensions.swift; sourceTree = "<group>"; };
@@ -130,6 +133,30 @@
 				F930CEEF1C9AEAEE0051675B /* Security.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F94925AB1C9D6FE2009BD380 /* HTTP */ = {
+			isa = PBXGroup;
+			children = (
+				F98212A21C989A820086F948 /* CJHttpServerImpl.swift */,
+				F94925A51C9D6DCF009BD380 /* CJHttpServerRequestImpl.swift */,
+				F94925A71C9D6DD9009BD380 /* CJHttpServerResponseImpl.swift */,
+				F94925A91C9D6EF3009BD380 /* CJHttpBinaryConnectionImpl.swift */,
+				F94925A31C9D6D8B009BD380 /* CJHttpStringConnectionImpl.swift */,
+			);
+			name = HTTP;
+			sourceTree = "<group>";
+		};
+		F94925AC1C9D7005009BD380 /* Socket */ = {
+			isa = PBXGroup;
+			children = (
+				F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */,
+				F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */,
+				F94925AF1C9D708F009BD380 /* CJTcpSocketConnectionImpl.swift */,
+				F94925B11C9D70E2009BD380 /* CJTlsServerImpl.swift */,
+				F94925AD1C9D705E009BD380 /* CJTlsSocketConnectionImpl.swift */,
+			);
+			name = Socket;
 			sourceTree = "<group>";
 		};
 		F98212681C98965D0086F948 = {
@@ -176,14 +203,8 @@
 		F98212A71C989E890086F948 /* Impl */ = {
 			isa = PBXGroup;
 			children = (
-				F98212A91C989ED20086F948 /* CJServerImpl.swift */,
-				F98212A21C989A820086F948 /* CJHttpServerImpl.swift */,
-				F94925A51C9D6DCF009BD380 /* CJHttpServerRequestImpl.swift */,
-				F94925A71C9D6DD9009BD380 /* CJHttpServerResponseImpl.swift */,
-				F94925A91C9D6EF3009BD380 /* CJHttpBinaryConnectionImpl.swift */,
-				F94925A31C9D6D8B009BD380 /* CJHttpStringConnectionImpl.swift */,
-				F98212B01C98AD6C0086F948 /* CJTcpListenerImpl.swift */,
-				F98212E71C990E7D0086F948 /* CJTcpServerImpl.swift */,
+				F94925AB1C9D6FE2009BD380 /* HTTP */,
+				F94925AC1C9D7005009BD380 /* Socket */,
 			);
 			name = Impl;
 			sourceTree = "<group>";
@@ -397,6 +418,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F98212A11C9898E00086F948 /* CJSwerve.swift in Sources */,
+				F94925B21C9D70E2009BD380 /* CJTlsServerImpl.swift in Sources */,
 				F98212A31C989A820086F948 /* CJHttpServerImpl.swift in Sources */,
 				F98212B41C98B4940086F948 /* CJExtensions.swift in Sources */,
 				F98212B11C98AD6C0086F948 /* CJTcpListenerImpl.swift in Sources */,
@@ -405,12 +427,13 @@
 				F94925A11C9CB768009BD380 /* PGPortMapperBonjour.m in Sources */,
 				F930CEE81C9A310C0051675B /* CJHexDump.c in Sources */,
 				F930CEED1C9AE6E90051675B /* CJGlobal.swift in Sources */,
+				F94925B01C9D708F009BD380 /* CJTcpSocketConnectionImpl.swift in Sources */,
 				F9BF679E1C9BD604004AB3EE /* OpenSSLCertificate.m in Sources */,
 				F9BF67921C9BD3CF004AB3EE /* DeviceId.swift in Sources */,
+				F94925AE1C9D705E009BD380 /* CJTlsSocketConnectionImpl.swift in Sources */,
 				F94925A41C9D6D8B009BD380 /* CJHttpStringConnectionImpl.swift in Sources */,
 				F98212A51C989B1A0086F948 /* CJHttpServer.swift in Sources */,
 				F9BF67981C9BD5A5004AB3EE /* NSData+SHA256Digest.m in Sources */,
-				F98212AA1C989ED20086F948 /* CJServerImpl.swift in Sources */,
 				F9BF679F1C9BD604004AB3EE /* SecCertificate.swift in Sources */,
 				F98212EB1C990F2C0086F948 /* CJSocketServer.swift in Sources */,
 				F94925A81C9D6DD9009BD380 /* CJHttpServerResponseImpl.swift in Sources */,
@@ -426,7 +449,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F98212C91C98CC4B0086F948 /* CJSwerve.swift in Sources */,
-				F98212CA1C98CC4B0086F948 /* CJServerImpl.swift in Sources */,
 				F98212CB1C98CC4B0086F948 /* CJHttpServerImpl.swift in Sources */,
 				F98212CC1C98CC4B0086F948 /* CJTcpListenerImpl.swift in Sources */,
 				F98212E91C990E7D0086F948 /* CJTcpServerImpl.swift in Sources */,

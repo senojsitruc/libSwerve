@@ -23,6 +23,7 @@ public protocol CJConnection {
 	
 	var context: Any? { get set }
 	var readHandler: CJConnectionReadHandler? { get set }
+	var readHandler2: CJConnectionReadHandler2? { get set }
 	var closeHandler: ((CJConnection) -> Void)? { get set }
 	
 	func open()
@@ -168,6 +169,7 @@ public protocol CJTlsSocketConnection: CJTlsConnection, CJSocketConnection {
 }
 
 public typealias CJConnectionReadHandler = (UnsafePointer<Void>, Int) -> Void
+public typealias CJConnectionReadHandler2 = (dispatch_data_t, Int) -> Void
 
 public typealias CJServerAcceptHandler = (CJConnection) -> Void
 

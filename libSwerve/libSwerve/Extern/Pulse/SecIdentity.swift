@@ -10,34 +10,6 @@ extension SecIdentity {
 		return identitySearchDict
 	}
 	
-//	private class func keychainAttr() -> String {
-//		let keychainAttr = "us.curtisjones.libSwerve.001"
-//		return keychainAttr
-//	}
-//	
-//	public class func myIdentity() -> SecIdentity? {
-//		let attr = keychainAttr()
-//		let storedIdentity : SecIdentity? = getStoredIdentity(attr)
-//		if let myId = storedIdentity {
-//			return myId
-//		}
-//		else {
-//			var error : NSError? = nil
-//			let newId : SecIdentity? = create(error:&error)
-//			if let myId = newId {
-//				if (storeIdentity(myId, attr)) {
-//					return myId
-//				}
-//			}
-//		}
-//		return nil
-//	}
-//	
-//	public class func deleteMyIdentity() {
-//		let dict = identitySearchDict(keychainAttr())
-//		SecItemDelete(dict)
-//	}
-	
 	public class func getStoredIdentity(keychainAttribute : String) -> SecIdentity? {
 		let dict = identitySearchDict(keychainAttribute)
 		var out: AnyObject? = nil

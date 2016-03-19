@@ -92,3 +92,5 @@ let identity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisj
 - [ ] Gzip Stream Compression
 - [x] TLS/SSL + Certificate Generation
 - [ ] Logging
+- [ ] Quotas
+- [ ] IP Blocklist

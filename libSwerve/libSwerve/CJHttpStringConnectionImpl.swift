@@ -8,7 +8,7 @@
 
 import Foundation
 
-private enum ConnectionState {
+private enum ConnectionState: Int {
 	case None
 	case Header
 	case Body
