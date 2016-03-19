@@ -60,7 +60,7 @@ httpServer.start() { success, error in
 ```
 
 Ask your default gateway to open a port. This part is still a work-in-progress, as there's presently no way for the caller to discover which port was opened.
-'''
+```
 tcpServer.enablePortMapping(externalPort: 0)
 ```
 
