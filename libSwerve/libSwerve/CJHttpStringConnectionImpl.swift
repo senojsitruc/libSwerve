@@ -63,7 +63,7 @@ internal class CJHttpStringConnectionImpl: CJHttpConnection {
 					// there should be precisely three parts (method, path and version)
 					if parts.count != 3 {
 						DLog("Unsupported 1st line; expected 3 parts: \(line)")
-						connection.closeConnection()
+						connection.close()
 						break
 					}
 					
@@ -135,7 +135,7 @@ internal class CJHttpStringConnectionImpl: CJHttpConnection {
 	}
 	
 	func close() {
-		connection.closeConnection()
+		connection.close()
 	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int) {

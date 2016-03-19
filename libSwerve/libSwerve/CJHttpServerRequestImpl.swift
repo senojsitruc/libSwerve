@@ -21,15 +21,7 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 	init(methodName: String, path: String, version: String, completionHandler: (() -> Void)?) {
 		self.completionHandler = completionHandler
 		
-		if methodName == "GET" {
-			method = .Get
-		}
-		else if methodName == "POST" {
-			method = .Post
-		}
-		else {
-			method = .None
-		}
+		method = CJHttpMethod(rawValue: methodName ?? "") ?? .None
 		
 		// separate the path from the query (if any)
 		do {
@@ -62,4 +54,5 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 	func cleanup() {
 		completionHandler?()
 	}
+	
 }

@@ -20,13 +20,13 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 	// pointer to the ssl system
 	var tlsReadHandler: SSLReadFunc { return { a, b, c in
 		return Unmanaged<CJTlsSocketConnectionImpl>.fromOpaque(COpaquePointer(a)).takeUnretainedValue().tlsReadCallback(a, data: b, dataLength: c)
-		}}
+	}}
 	
 	// wraps a call to the tlsWriteCallback() member func in a block that can be passed as a c
 	// function pointer to the ssl system
 	var tlsWriteHandler: SSLWriteFunc { return { a, b, c in
 		return Unmanaged<CJTlsSocketConnectionImpl>.fromOpaque(COpaquePointer(a)).takeUnretainedValue().tlsWriteCallback(a, data: b, dataLength: c)
-		}}
+	}}
 	
 	// CJConnection
 	var context: Any?
@@ -72,11 +72,11 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 				
 				if status == errSSLClosedGraceful {
 					DLog("SSL connection closed gracefully.")
-					connection.closeConnection()
+					connection.close()
 				}
 				else if status == errSSLWouldBlock {
 					DLog("Failed to SSLRead() because errSSLWouldBlock.")
-					connection.closeConnection()
+					connection.close()
 				}
 				else if processed > 0 {
 					if let handler = _self.readHandler {
@@ -94,8 +94,16 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 		connection.open()
 	}
 	
-	func closeConnection() {
-		connection.closeConnection()
+	func close() {
+		connection.close()
+	}
+	
+	func pause() {
+		connection.pause()
+	}
+	
+	func resume() {
+		connection.resume()
 	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?) {
@@ -112,8 +120,6 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 		var success = true
 		
 		repeat {
-			//DLog("totalBytes = \(totalBytes), size = \(size)")
-			
 			var processed = 0
 			let status = SSLWrite(tlsContext, bytes.advancedBy(totalBytes), size, &processed)
 			
@@ -134,11 +140,12 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 		completionHandler?(success)
 	}
 	
+	///
+	/// Called (indirectly via tlsReadHandler) by the SSL system when it wants to read data.
+	///
 	func tlsReadCallback(connection: SSLConnectionRef, data: UnsafeMutablePointer<Void>, dataLength: UnsafeMutablePointer<Int>) -> OSStatus {
 		let size = dataLength.memory
 		var totalUsed = 0
-		
-		//DLog("Being asked for \(dataLength.memory) bytes")
 		
 		dispatch_sync(tmpdataQueue) { [tmpdata] in
 			dispatch_data_apply(self.tmpdata) { region, offset, data2, size2 in
@@ -150,15 +157,15 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 			self.tmpdata = dispatch_data_create_subrange(tmpdata, totalUsed, dispatch_data_get_size(tmpdata) - totalUsed)
 		}
 		
-		//DLog("Returning \(totalUsed) bytes. Remaining: \(dispatch_data_get_size(self.tmpdata))")
-		
 		dataLength.memory = totalUsed
 		
 		return 0
 	}
 	
+	///
+	/// Called (indirectly via tlsWriteHandler) by the SSL system when it wants to write data.
+	///
 	func tlsWriteCallback(connection: SSLConnectionRef, data: UnsafePointer<Void>, dataLength: UnsafeMutablePointer<Int>) -> OSStatus {
-		//let size = dataLength.memory
 		self.connection.write(data, size: dataLength.memory) { success in /* DLog("Writing \(size) bytes succeeded!") */ }
 		return 0
 	}

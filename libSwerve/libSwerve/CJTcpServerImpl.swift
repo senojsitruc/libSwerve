@@ -55,7 +55,7 @@ internal class CJTcpServerImpl: CJSocketServer {
 		listener = nil
 		
 		dispatch_sync(queue) {
-			self.connections.forEach() { $0.connection.closeConnection() }
+			self.connections.forEach() { $0.connection.close() }
 			self.connections.removeAll()
 		}
 	}

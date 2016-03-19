@@ -8,12 +8,17 @@
 
 import Foundation
 
-public struct CJHttpMethod: OptionSetType {
-	public let rawValue: Int
-	public init(rawValue: Int) { self.rawValue = rawValue }
-	public static let None = CJHttpMethod(rawValue:      0)
-	public static let Get  = CJHttpMethod(rawValue: 1 << 0)
-	public static let Post = CJHttpMethod(rawValue: 1 << 1)
+public enum CJHttpMethod: String {
+	case None = "None"
+	case Get = "GET"
+	case Post = "POST"
+	case Put = "PUT"
+}
+
+public enum CJHttpContentType: String {
+	case None = "None"
+	case UrlForm = "application/x-www-form-urlencoded"
+	case MultipartForm = "multipart/form-data"
 }
 
 public typealias CJHttpServerResponseHandler = (CJHttpServerResponse) -> Void
@@ -23,6 +28,7 @@ public typealias CJHttpServerRequestPathLikeHandler = ([String], CJHttpServerReq
 public typealias CJHttpConnectionRequestHandler = (CJHttpConnection, CJHttpServerRequest) -> Void
 
 public struct CJHttpHeader {
+	
 	var name: String
 	var values = [String]()
 	var value: String? {
@@ -128,7 +134,13 @@ extension CJHttpServerRequest {
 		set { self.setHeaderValue("Content-Length", value: newValue) }
 	}
 	
+	var contentType: String? {
+		get { return self.headerStringValue("Content-Type") }
+		set { self.setHeaderValue("Content-Type", value: newValue) }
+	}
+	
 	func headerIntValue(name: String) -> Int? { return Int(headers[name]?.value ?? "") }
+	func headerStringValue(name: String) -> String? { return headers[name]?.value }
 	
 	mutating func setHeaderValue(name: String, value: AnyObject?) {
 		guard let value = value else {

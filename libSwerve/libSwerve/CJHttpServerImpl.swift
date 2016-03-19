@@ -211,7 +211,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 					}
 				}
 				else {
-					// close the connection if the target file doesn't exist
+					// close the connection if the target file's data isn't accessible (permissions?)
 					guard let fileData = NSData(contentsOfFile: filePath) else {
 						response.finish()
 						response.close()

@@ -27,9 +27,9 @@ public protocol CJConnection {
 	var closeHandler: ((CJConnection) -> Void)? { get set }
 	
 	func open()
-	func closeConnection()
-//func pause()
-//func resume(waitForWrites waitForWrites: Bool)
+	func close()
+	func pause()
+	func resume()
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?)
 	func write(data: NSData, completionHandler: ((Bool) -> Void)?)

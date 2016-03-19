@@ -75,6 +75,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		}
 		
 		///
+		/// file upload handler
+		///
+		httpServer.addHandler(.Post, pathEquals: "/upload") { request, response in
+			//DLog("request = \(request)")
+			
+//			CJDispatchBackground() {
+//				var response = response
+//				
+//				response.addHeader("Content-Type", value: "text/plain")
+//				response.addHeader("Content-Length", value: 15)
+//				response.addHeader("Connection", value: "keep-alive")
+//				response.write("This is a test.")
+//				response.finish()
+//			}
+			
+//			request.resumeWithHandler() { done, data, error in
+//				
+//			}
+			
+		}
+		
+		///
 		/// start the http server
 		///
 		httpServer.start() { success, error in
@@ -82,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			self.server = httpServer
 		}
 		
-		tcpServer.enablePortMapping(externalPort: 0)
+		//tcpServer.enablePortMapping(externalPort: 0)
 		
 		server = httpServer
 	}

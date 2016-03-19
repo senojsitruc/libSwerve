@@ -26,6 +26,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	private var stop: Int32 = 0
 	private let queue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.queue", DISPATCH_QUEUE_SERIAL)
 	private let group = dispatch_group_create()
+	private let pauser = dispatch_group_create()
 	private var bytesIn: size_t = 0
 	private var bytesOut: size_t = 0
 	
@@ -44,10 +45,10 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			if error != 0 {
 				self?.log("Channel open failed. [sockfd = \(sockfd), error = (\(error)) \(cjstrerror(error))")
 				self?.channel = nil
-				self?.closeConnection()
+				self?.close()
 			}
 			else {
-				self?.log("Channel closed. [sockfd = \(sockfd)")
+				self?.log("Channel closed. [sockfd = \(sockfd)]")
 			}
 		}
 		
@@ -55,19 +56,21 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 		
 		dispatch_io_set_low_water(channel, 1)
 		dispatch_io_set_interval(channel, 10000000000, DISPATCH_IO_STRICT_INTERVAL)
-		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, group] done, data, error in
+		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, group, pauser] done, data, error in
+			// stop!
 			if self?.stop != 0 {
 				return
 			}
 			
 			dispatch_group_enter(group)
+			dispatch_group_wait(pauser, DISPATCH_TIME_FOREVER)
 			
 			if data != nil && dispatch_data_get_size(data) != 0 {
 				self?.handleIncoming(done: done, data: data, error: error)
 			}
 			
 			if done == true || error != 0 {
-				self?.closeConnection()
+				self?.close()
 				self?.log("Error while reading. \(error) = \(cjstrerror(error))")
 			}
 			
@@ -75,7 +78,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 		}
 	}
 	
-	func closeConnection() {
+	func close() {
 		if OSAtomicCompareAndSwap32(0, 1, &stop) == false { return }
 		
 		dispatch_group_notify(group, queue) { [sockfd] in
@@ -85,7 +88,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			if let channel = self.channel {
 				dispatch_io_close(channel, DISPATCH_IO_STOP)
 			}
-			close(sockfd)
+			Darwin.close(sockfd)
 			
 			self.closeHandler?(self)
 			
@@ -94,6 +97,14 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			
 			self.log("Connection closed. [bytesIn = \(self.bytesIn); bytesOut = \(self.bytesOut)]")
 		}
+	}
+	
+	func pause() {
+		dispatch_group_enter(pauser)
+	}
+	
+	func resume() {
+		dispatch_group_leave(pauser)
 	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?) {
@@ -113,7 +124,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 				completionHandler?(error == 0)
 				
 				if error != 0 {
-					self.closeConnection()
+					self.close()
 					self.log("Writing. [error = [\(error)] \(cjstrerror(error))]")
 				}
 				
