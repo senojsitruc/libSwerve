@@ -94,6 +94,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //				
 //			}
 			
+			// short url-encoded form values
+			
+			// giant file upload
+			
+			// several giant files
+			
+			// several giant files + several url-encoded values
+			
+			// request.read
+			
 		}
 		
 		///

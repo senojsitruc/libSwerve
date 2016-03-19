@@ -81,8 +81,6 @@ public protocol CJHttpConnection {
 	init(connection: CJConnection, requestHandler: CJHttpConnectionRequestHandler)
 	
 	func close()
-//func resume()
-//func resumeAfterWrites()
 	
 	func write(bytes: UnsafePointer<Void>, size: Int)
 	func write(data: NSData)

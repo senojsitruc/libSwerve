@@ -123,7 +123,7 @@ internal class CJHttpBinaryConnectionImpl: CJHttpConnection {
 		
 		// we got a blank line; advance to the body (if any)
 		if line.isEmpty == true {
-			connectionState = .Done
+			connectionState = request?.contentLength > 0 ? .Body : .None
 			return
 		}
 		
