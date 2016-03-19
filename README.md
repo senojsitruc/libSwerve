@@ -79,3 +79,13 @@ let identity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisj
 	CJCrypto.setupTLS(identity)
 }
 ```
+
+### Status
+
+- [x] HTTP GET
+- [ ] HTTP POST
+- [ ] HTTP Multi-part Requests
+- [ ] HTTP Multi-part Responses
+- [x] HTTP Keep-Alive
+- [x] TLS/SSL
+- [ ] Logging
