@@ -6,7 +6,7 @@
 #import <openssl/pkcs12.h>
 #import <openssl/x509v3.h>
 
-static unsigned char *const DEFAULT_CERTIFICATE_COMMON_NAME = (unsigned char * const)"us.curtisjones.libSwerve.001";
+// static unsigned char *const DEFAULT_CERTIFICATE_COMMON_NAME = (unsigned char * const)"us.curtisjones.libSwerve.001";
 
 static const int MAX_PASS_SIZE = 1024;
 
@@ -16,22 +16,24 @@ static const int MAX_PASS_SIZE = 1024;
 @property(nonatomic) EVP_PKEY *pkey;
 @property(nonatomic) X509 *x509;
 @property(nonatomic) long serial;
+@property(nonatomic) NSString *label;
 @end
 
 @implementation OpenSSLCertificate
 
-- (instancetype)initWithEndDate:(NSDate*)endDate bits:(NSUInteger)bits serial:(long)serial {
+- (instancetype)initWithEndDate:(NSDate*)endDate bits:(NSUInteger)bits label:(NSString *)label serial:(long)serial {
     NSUInteger days = 0;
     if (endDate) {
         days = [self.class daysFromDate:[NSDate date] untilDate:endDate];
     }
-    return [self initWithDays:days bits:bits serial:serial];
+	return [self initWithDays:days bits:bits label:label serial:serial];
 }
 
-- (instancetype)initWithDays:(NSUInteger)days bits:(NSUInteger)bits serial:(long)serial {
+- (instancetype)initWithDays:(NSUInteger)days bits:(NSUInteger)bits label:(NSString *)label serial:(long)serial {
     if (self = [super init]) {
         self.days = days;
         self.bits = bits;
+			self.label = label;
         self.serial = serial;
         CRYPTO_mem_ctrl(CRYPTO_MEM_CHECK_ON);
     }
@@ -84,7 +86,8 @@ static const int MAX_PASS_SIZE = 1024;
 
     X509_NAME *name = X509_get_subject_name(self.x509);
 
-    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, DEFAULT_CERTIFICATE_COMMON_NAME, -1, -1, 0);
+//  X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, DEFAULT_CERTIFICATE_COMMON_NAME, -1, -1, 0);
+    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, (const unsigned char *)self.label.UTF8String, -1, -1, 0);
 
     /* Its self signed so set the issuer name to be the same as the
       * subject.

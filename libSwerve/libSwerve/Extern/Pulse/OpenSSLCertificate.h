@@ -6,8 +6,8 @@
 
 @interface OpenSSLCertificate : NSObject
 
-- (instancetype)initWithEndDate:(NSDate*)endDate bits:(NSUInteger)bits serial:(long)serial;
-- (instancetype)initWithDays:(NSUInteger)days bits:(NSUInteger)bits serial:(long)serial;
+- (instancetype)initWithEndDate:(NSDate*)endDate bits:(NSUInteger)bits label:(NSString *)label serial:(long)serial;
+- (instancetype)initWithDays:(NSUInteger)days bits:(NSUInteger)bits label:(NSString *)label serial:(long)serial;
 
 /**
  * This method attempts to create a self signed certificate using the settings

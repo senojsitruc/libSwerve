@@ -10,33 +10,33 @@ extension SecIdentity {
 		return identitySearchDict
 	}
 	
-	private class func keychainAttr() -> String {
-		let keychainAttr = "us.curtisjones.libSwerve.001"
-		return keychainAttr
-	}
-	
-	public class func myIdentity() -> SecIdentity? {
-		let attr = keychainAttr()
-		let storedIdentity : SecIdentity? = getStoredIdentity(attr)
-		if let myId = storedIdentity {
-			return myId
-		}
-		else {
-			var error : NSError? = nil
-			let newId : SecIdentity? = create(error:&error)
-			if let myId = newId {
-				if (storeIdentity(myId, attr)) {
-					return myId
-				}
-			}
-		}
-		return nil
-	}
-	
-	public class func deleteMyIdentity() {
-		let dict = identitySearchDict(keychainAttr())
-		SecItemDelete(dict)
-	}
+//	private class func keychainAttr() -> String {
+//		let keychainAttr = "us.curtisjones.libSwerve.001"
+//		return keychainAttr
+//	}
+//	
+//	public class func myIdentity() -> SecIdentity? {
+//		let attr = keychainAttr()
+//		let storedIdentity : SecIdentity? = getStoredIdentity(attr)
+//		if let myId = storedIdentity {
+//			return myId
+//		}
+//		else {
+//			var error : NSError? = nil
+//			let newId : SecIdentity? = create(error:&error)
+//			if let myId = newId {
+//				if (storeIdentity(myId, attr)) {
+//					return myId
+//				}
+//			}
+//		}
+//		return nil
+//	}
+//	
+//	public class func deleteMyIdentity() {
+//		let dict = identitySearchDict(keychainAttr())
+//		SecItemDelete(dict)
+//	}
 	
 	public class func getStoredIdentity(keychainAttribute : String) -> SecIdentity? {
 		let dict = identitySearchDict(keychainAttribute)
@@ -55,18 +55,18 @@ extension SecIdentity {
 		return errSecSuccess == resultCode
 	}
 	
-	public class func create(numberOfBits bits : UInt = 3072, error : NSErrorPointer) -> SecIdentity? {
-		let pass = "pwd"
+	public class func create(numberOfBits bits: UInt = 4096, label: String, password: String, error: NSErrorPointer) -> SecIdentity? {
+//	let pass = "pwd"
 		let pkcs12Data : NSData
 		do {
-			pkcs12Data = try createPKCS12BlobUsingOpenSSL(pass, bits: bits)
+			pkcs12Data = try createPKCS12BlobUsingOpenSSL(password, bits: bits, label: label)
 		}
 		catch {
 			return nil
 		}
 		
 		let key: NSString = kSecImportExportPassphrase as NSString
-		let options: NSDictionary = [key: pass]
+		let options: NSDictionary = [key: password]
 		var items: CFArray?
 		let status = SecPKCS12Import(pkcs12Data, options, &items);
 		if (errSecSuccess != status) {
@@ -121,7 +121,7 @@ extension SecIdentity {
 		return randomSerial
 	}
 	
-	class func createPKCS12BlobUsingOpenSSL(pass: String, bits:UInt) throws -> NSData {
+	class func createPKCS12BlobUsingOpenSSL(pass: String, bits: UInt, label: String) throws -> NSData {
 		let cal = NSCalendar.currentCalendar()
 		let components = NSDateComponents()
 		components.year = 2049
@@ -132,10 +132,10 @@ extension SecIdentity {
 		components.second = 59
 		let endDate = cal.dateFromComponents(components)
 		
-		let cert:OpenSSLCertificate! = OpenSSLCertificate(endDate:endDate, bits: bits, serial: CLong(randomSerial()))
+		let cert:OpenSSLCertificate! = OpenSSLCertificate(endDate: endDate, bits: bits, label: label, serial: CLong(randomSerial()))
 		do {
 			try cert.tryCreateSelfSignedCertificate()
-			return try cert.createPKCS12BlobWithPassword("pwd")
+			return try cert.createPKCS12BlobWithPassword(pass)
 		}
 	}
 }

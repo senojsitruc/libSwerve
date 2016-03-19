@@ -14,6 +14,13 @@ public final class CJCrypto {
 	internal static var identity: SecIdentity?
 	
 	///
+	/// Generates a self-signed certificate.
+	///
+	public class func generateIdentity(keySizeInBits bits: UInt, label: String, password: String) -> SecIdentity? {
+		return SecIdentity.create(numberOfBits: bits, label: label, password: password, error: nil)
+	}
+	
+	///
 	/// Generates a new key pair. If permanent, the key pair is stored in the default keychain. To
 	/// use this keypair in a TLS context, the specified label can be used in a call to [some func].
 	///

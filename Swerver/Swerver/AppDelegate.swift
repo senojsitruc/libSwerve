@@ -17,6 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	var server: CJHttpServer!
 
 	func applicationDidFinishLaunching(aNotification: NSNotification) {
+		setupCertificate()
 		setupHttpServer()
 	}
 
@@ -35,14 +36,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	
 	
+	private final func setupCertificate() {
+//	let tlsIdentity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisjones.libSwerve.tlsKey-002", password: "drowssap")
+		if let tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.tlsKey-002") {
+			CJCrypto.setupTLS(tlsIdentity)
+			DLog("tlsIdentity = \(tlsIdentity)")
+		}
+	}
+	
 	private final func setupHttpServer() {
-		//CJCrypto.generateKeyPair(label: "us.curtisjones.libSwerve.tlsKey-002")
-		//tlsIdentity = SecIdentity.create(numberOfBits: 4096, error: nil)
-		//if let identity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.001") {
-		//	CJCrypto.setupTLS(identity)
-		//}
-		
 		let tcpServer = CJSwerve.tcpServerType.init(port: 8080)
+//	let tcpServer = CJSwerve.tlsTcpServerType.init(port: 8080)
 		var httpServer = CJSwerve.httpServerType.init(server: tcpServer)
 		
 		///
