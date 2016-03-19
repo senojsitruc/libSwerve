@@ -22,7 +22,7 @@ The HTTP server uses our TCP server for communication.
 var httpServer = CJSwerve.httpServerType.init(server: tcpServer)
 ```
 
-This handler will be called for "/" requests. We're just returning a string literal.
+Next up, we need to give our server some content to serve. This handler will be called for "/" requests. We're just returning a string literal.
 ```
 // This handler will be called for "/" requests. Return some text.
 httpServer.addHandler(.Get, pathEquals: "/") { request, response in
@@ -53,12 +53,11 @@ do {
 ```
 
 Finally, we'll start the HTTP server, which in turn starts the TCP server.
-'''
+```
 httpServer.start() { success, error in
 	// self.server = httpServer
 }
-'''
-
+```
 
 Ask your default gateway to open a port. This part is still a work-in-progress, as there's presently no way for the caller to discover which port was opened.
 '''
