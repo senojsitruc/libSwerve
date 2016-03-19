@@ -11,7 +11,7 @@ import Foundation
 public struct CJSwerve {
 	
 	public static var httpServerType: CJHttpServer.Type = CJHttpServerImpl.self
-	public static var httpConnectionType: CJHttpConnection.Type = CJHttpConnectionImpl.self
+	public static var httpConnectionType: CJHttpConnection.Type = CJHttpStringConnectionImpl.self
 	public static var httpRequestType: CJHttpServerRequest.Type = CJHttpServerRequestImpl.self
 	public static var httpResponseType: CJHttpServerResponse.Type = CJHttpServerResponseImpl.self
 	
