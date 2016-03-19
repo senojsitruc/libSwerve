@@ -20,7 +20,7 @@ httpServer.addHandler(.Get, pathEquals: "/") { request, response in
 }
 
 # This handler uses the `pathLike` feature.
-httpServer.addHandler(.Get, pathLike: "^/SomePath/(\d+)/(\d+)\\.txt$") { values, request, response in
+httpServer.addHandler(.Get, pathLike: "^/SomePath/(\\d+)/(\\d+)\\.txt$") { values, request, response in
 	// ...
 }
 
@@ -33,8 +33,7 @@ do {
 
 // Start your engines.
 httpServer.start() { success, error in
-	DLog("success = \(success), error = \(error?.localizedDescription)")
-	self.server = httpServer
+	// self.server = httpServer
 }
 
 // Ask your default gateway to open a port. This part is still a work-in-progress, as there's
