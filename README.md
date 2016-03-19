@@ -68,14 +68,14 @@ tcpServer.enablePortMapping(externalPort: 0)
 
 Before configuring and starting a TLS/SSL HTTP server, you must 'setupTLS()' with a certificate. If you have a legitimate one, just specify the appropriate label name for the Keychain item.
 ```
-if let tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.tlsKey-002") {
+if let tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.tlsKey-001") {
 	CJCrypto.setupTLS(tlsIdentity)
 }
 ```
 
-Otherwise (and subsequently), you can easily generate a self-signed certificate. Browsers will balk, but the connection will still be encrypted.
+Otherwise, you can easily generate a self-signed certificate (browsers will balk that it's self-signed, but the connection will still be encrypted). The freshly minted certificate will be saved to your local Keychain with the given label so that you can load it on subsequent application launches.
 ```
-let identity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisjones.libSwerve.tlsKey-002") {
+let identity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisjones.libSwerve.tlsKey-001") {
 	CJCrypto.setupTLS(identity)
 }
 ```
