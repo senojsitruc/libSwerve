@@ -37,7 +37,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	
 	private final func setupCertificate() {
-//	let tlsIdentity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisjones.libSwerve.tlsKey-002", password: "drowssap")
+//	let tlsIdentity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisjones.libSwerve.tlsKey-002")
 		if let tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.tlsKey-002") {
 			CJCrypto.setupTLS(tlsIdentity)
 			DLog("tlsIdentity = \(tlsIdentity)")

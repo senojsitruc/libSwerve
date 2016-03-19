@@ -16,7 +16,7 @@ public final class CJCrypto {
 	///
 	/// Generates a self-signed certificate.
 	///
-	public class func generateIdentity(keySizeInBits bits: UInt, label: String, password: String) -> SecIdentity? {
+	public class func generateIdentity(keySizeInBits bits: UInt, label: String, password: String = "drowssap") -> SecIdentity? {
 		return SecIdentity.create(numberOfBits: bits, label: label, password: password, error: nil)
 	}
 	
