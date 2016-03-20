@@ -17,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	var server: CJHttpServer!
 
 	func applicationDidFinishLaunching(aNotification: NSNotification) {
-		setupCertificate()
+	//setupCertificate()
 		setupHttpServer()
 	}
 

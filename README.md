@@ -22,9 +22,8 @@ The HTTP server uses our TCP server for communication.
 var httpServer = CJSwerve.httpServerType.init(server: tcpServer)
 ```
 
-Next up, we need to give our server some content to serve. This handler will be called for "/" requests. We're just returning a string literal.
+Next up, we need to give our server some content to serve. This handler will be called for "/" GET requests. We're just returning a string literal.
 ```
-// This handler will be called for "/" requests. Return some text.
 httpServer.addHandler(.Get, pathEquals: "/") { request, response in
 	CJDispatchBackground() {
 		var response = response
@@ -75,7 +74,7 @@ if let tlsIdentity = CJCrypto.identityWithLabel("us.curtisjones.libSwerve.tlsKey
 
 Otherwise, you can easily generate a self-signed certificate (browsers will balk that it's self-signed, but the connection will still be encrypted). The freshly minted certificate will be saved to your local Keychain with the given label so that you can load it on subsequent application launches.
 ```
-let identity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisjones.libSwerve.tlsKey-001") {
+if let identity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curtisjones.libSwerve.tlsKey-001") {
 	CJCrypto.setupTLS(identity)
 }
 ```
