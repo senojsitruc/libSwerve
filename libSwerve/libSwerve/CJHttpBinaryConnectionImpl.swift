@@ -69,6 +69,8 @@ internal class CJHttpBinaryConnectionImpl: CJHttpConnection {
 			self.connectionState = .None
 			self.request = nil
 			
+			DLog(request.method.rawValue + " " + request.path)
+			
 			dispatch_async(queue) { [group, requestHandler] in
 				dispatch_group_wait(group, DISPATCH_TIME_FOREVER)
 				dispatch_group_enter(group)

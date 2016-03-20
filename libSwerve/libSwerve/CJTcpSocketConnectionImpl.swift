@@ -29,6 +29,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	private let pauser = dispatch_group_create()
 	private var bytesIn: size_t = 0
 	private var bytesOut: size_t = 0
+	private var lastReadTime: dispatch_time_t = 0
 	
 	required init(sockfd: Int32, soaddr: sockaddr_in) {
 		self.sockfd = sockfd
@@ -58,16 +59,24 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 		dispatch_io_set_interval(channel, 10000000000, DISPATCH_IO_STRICT_INTERVAL)
 		dispatch_io_read(channel, 0, Int.max, queue) { [weak self, group, pauser] done, data, error in
 			// stop!
-			if self?.stop != 0 {
-				return
-			}
+			if self?.stop != 0 { return }
 			
 			dispatch_group_enter(group)
 			dispatch_group_wait(pauser, DISPATCH_TIME_FOREVER)
 			
+			let currentTime = dispatch_time(DISPATCH_TIME_NOW, 0)
+			let lastReadTime = self?.lastReadTime ?? 0
+			
+			// if there's data, process it. otherwise, if the connection has been idlea too long, close it.
 			if data != nil && dispatch_data_get_size(data) != 0 {
 				self?.handleIncoming(done: done, data: data, error: error)
 			}
+			else if done != true && lastReadTime != 0 && currentTime > lastReadTime + (NSEC_PER_SEC * 60) {
+				self?.log("Closing idle connection.")
+				self?.close()
+			}
+			
+			self?.lastReadTime = currentTime
 			
 			if done == true || error != 0 {
 				self?.close()
