@@ -152,3 +152,13 @@ extension dispatch_data_t {
 internal func +(lhs: dispatch_data_t, rhs: dispatch_data_t) -> dispatch_data_t {
 	return dispatch_data_create_concat(lhs, rhs)
 }
+
+extension NSFileManager {
+	
+	func isDirectory(path: String) -> Bool {
+		var isdir: ObjCBool = false
+		self.fileExistsAtPath(path, isDirectory: &isdir)
+		return Bool(isdir)
+	}
+	
+}

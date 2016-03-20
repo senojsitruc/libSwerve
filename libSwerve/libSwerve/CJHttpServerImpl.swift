@@ -167,7 +167,7 @@ internal class CJHttpServerImpl: CJHttpServer {
 				var response = response
 				
 				// assemble the file path
-				let fileName = path
+				let fileName = path.stringByRemovingPercentEncoding ?? ""
 				let fileType = (fileName as NSString).pathExtension.lowercaseString
 				let filePath = localPath + fileName
 				
@@ -188,7 +188,12 @@ internal class CJHttpServerImpl: CJHttpServer {
 						
 						for fileName in try fileManager.contentsOfDirectoryAtPath(filePath) {
 							if fileName.hasPrefix(".") == false {
-								page += "<a href=\"\(fileName.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet()) ?? "")\">\(fileName)</a><br>"
+								if fileManager.isDirectory(filePath + "/" + fileName) {
+									page += "<a href=\"\(fileName.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet()) ?? "")/\">\(fileName)/</a><br>"
+								}
+								else {
+									page += "<a href=\"\(fileName.stringByAddingPercentEncodingWithAllowedCharacters(.URLHostAllowedCharacterSet()) ?? "")\">\(fileName)</a><br>"
+								}
 							}
 						}
 						
