@@ -88,9 +88,12 @@ if let identity = CJCrypto.generateIdentity(keySizeInBits: 4096, label: "us.curt
 - [ ] HTTP Multi-part Requests
 - [ ] HTTP Multi-part Responses
 - [x] HTTP Keep-Alive
+- [ ] HTTP Auth
 - [ ] Gzip Stream Compression
 - [x] TLS/SSL + Certificate Generation
 - [ ] Logging
 - [ ] Quotas
 - [ ] IP Blocklist
 - [ ] IPv6
+- [ ] Proxy
+- [ ] Port Mapping
