@@ -35,6 +35,8 @@ public protocol CJConnection {
 	func write(data: NSData, completionHandler: ((Bool) -> Void)?)
 	func write(string: String, completionHandler: ((Bool) -> Void)?)
 	
+	func log(string: String)
+	
 }
 
 extension CJConnection {

@@ -140,6 +140,10 @@ internal class CJTlsSocketConnectionImpl: CJTlsSocketConnection {
 		completionHandler?(success)
 	}
 	
+	func log(string: String) {
+		connection.log(string)
+	}
+	
 	///
 	/// Called (indirectly via tlsReadHandler) by the SSL system when it wants to read data.
 	///

@@ -8,17 +8,22 @@
 
 import Foundation
 
-internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
+internal class CJHttpServerRequestImpl: CJHttpServerRequest {
 	
 	var method: CJHttpMethod
 	var path: String
 	var query: String
 	var version: String
 	var headers = [String: CJHttpHeader]()
+	var values: [String: AnyObject]?
 	
-	private let completionHandler: (() -> Void)?
+	var contentHandler: ((AnyObject?, Bool) -> Void)?
 	
-	init(methodName: String, path: String, version: String, completionHandler: (() -> Void)?) {
+	private var connection: CJHttpConnection?
+	private var completionHandler: (() -> Void)?
+	
+	required init(methodName: String, path: String, version: String, connection: CJHttpConnection?, completionHandler: (() -> Void)?) {
+		self.connection = connection
 		self.completionHandler = completionHandler
 		
 		method = CJHttpMethod(rawValue: methodName ?? "") ?? .None
@@ -38,7 +43,7 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 		self.version = version
 	}
 	
-	mutating func addHeader(header: CJHttpHeader) {
+	func addHeader(header: CJHttpHeader) {
 		guard var existingHeader = headers[header.name] else {
 			headers[header.name] = header
 			return
@@ -49,10 +54,22 @@ internal struct CJHttpServerRequestImpl: CJHttpServerRequest {
 	}
 	
 	///
+	/// A connection is paused when the header is received and we need to the "user" to configure the
+	/// request for receiving whatever data may follow. Thus, after configuring the request, the user
+	/// will call resume(), and we'll telling the http connection to resume() which'll tell the under-
+	/// lying tcp connection to resume.
+	///
+	func resume() {
+		connection?.resume()
+	}
+	
+	///
 	/// called by the response when the response is complete
 	///
 	func cleanup() {
 		completionHandler?()
+		completionHandler = nil
+		connection = nil
 	}
 	
 }

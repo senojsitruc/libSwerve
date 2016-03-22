@@ -14,7 +14,7 @@ internal class CJHttpServerResponseImpl: CJHttpServerResponse {
 	
 	private var firstWrite = true
 	private let connection: CJHttpConnection
-	private let request: CJHttpServerRequest
+	private var request: CJHttpServerRequest
 	
 	required init(connection: CJHttpConnection, request: CJHttpServerRequest) {
 		self.connection = connection

@@ -10,7 +10,9 @@ import Foundation
 
 private protocol Handler {
 	
-	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool
+	var waitForData: Bool { get }
+	
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> CJHttpServerHandlerMatch?
 	
 }
 
@@ -18,16 +20,20 @@ private struct PathEqualsHandler: Handler {
 	
 	let method: CJHttpMethod
 	let path: String
-	let handler: CJHttpServerRequestPathEqualsHandler
+	let waitForData: Bool
+	let handler: CJHttpServerRequestHandler
 	
-	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool {
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> CJHttpServerHandlerMatch? {
 		if request.path == path {
-			handler(request, response)
-			return true
+			return CJHttpServerHandlerMatch(handler: handler, request: request, response: response, values: nil)
 		}
 		else {
-			return false
+			return nil
 		}
+	}
+	
+	func runHandler(match: CJHttpServerHandlerMatch) {
+		handler(match)
 	}
 	
 }
@@ -36,22 +42,21 @@ private struct PathLikeHandler: Handler {
 	
 	let method: CJHttpMethod
 	let regex: NSRegularExpression
-	let handler: CJHttpServerRequestPathLikeHandler
+	let waitForData: Bool
+	let handler: CJHttpServerRequestHandler
 	
-	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> Bool {
+	func matches(connection: CJHttpConnection, _ request: CJHttpServerRequest, _ response: CJHttpServerResponse) -> CJHttpServerHandlerMatch? {
 		let path = request.path
 		var values = [String]()
 		
-		guard let result = regex.firstMatchInString(path, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, request.path.characters.count)) else { return false }
+		guard let result = regex.firstMatchInString(path, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, request.path.characters.count)) else { return nil }
 		
 		for index in 0..<result.numberOfRanges {
 			guard let range = path.rangeFromNSRange(result.rangeAtIndex(index)) else { continue }
 			values.append(path.substringWithRange(range))
 		}
 		
-		handler(values, request, response)
-		
-		return true
+		return CJHttpServerHandlerMatch(handler: handler, request: request, response: response, values: values)
 	}
 	
 }
@@ -74,28 +79,20 @@ internal class CJHttpServerImpl: CJHttpServer {
 			var success = false
 			var nserror: NSError?
 			
+			// called after starting (or attempting to start) the server / listener to let the caller
+			// know whether we succeeded or not.
 			defer { CJDispatchMain() { completionHandler(success, nserror) } }
 			
-			let requestHandler: CJHttpConnectionRequestHandler = { [weak self] connection, request in
-				var matched = false
-				let response = CJSwerve.httpResponseType.init(connection: connection, request: request)
-				
-				for handler in self?.handlers ?? [] {
-					if handler.matches(connection, request, response) == true { matched = true; break }
-				}
-				
-				if matched == false {
-					DLog("No handler match found; closing connection [\(request)]")
-					connection.close()
-				}
-			}
-			
-			// link new connections to http connection objects
-			self.server.acceptHandler = { connection in
+			// wrap the underlying socket connection in an http connection object. the http connection
+			// object takes a handler that is called when an http request is received.
+			self.server.acceptHandler = { [weak self] connection in
 				var c = connection
-				c.context = CJSwerve.httpConnectionType.init(connection: connection, requestHandler: requestHandler)
+				c.context = CJSwerve.httpConnectionType.init(connection: connection) { connection, request in
+					self?.handleRequest(connection, request)
+				}
 			}
 			
+			// start the server or die trying
 			do {
 				try self.server.start()
 				success = true
@@ -132,14 +129,14 @@ internal class CJHttpServerImpl: CJHttpServer {
 		}
 	}
 	
-	func addHandler(method: CJHttpMethod, pathEquals path: String, handler: CJHttpServerRequestPathEqualsHandler) {
-		handlers.append(PathEqualsHandler(method: method, path: path, handler: handler))
+	func addHandler(method: CJHttpMethod, pathEquals path: String, waitForData: Bool = false, handler: CJHttpServerRequestHandler) {
+		handlers.append(PathEqualsHandler(method: method, path: path, waitForData: waitForData, handler: handler))
 	}
 	
-	func addHandler(method: CJHttpMethod, pathLike pattern: String, handler: CJHttpServerRequestPathLikeHandler) {
+	func addHandler(method: CJHttpMethod, pathLike pattern: String, waitForData: Bool = false, handler: CJHttpServerRequestHandler) {
 		do {
 			let regex = try NSRegularExpression(pattern: pattern, options: NSRegularExpressionOptions(rawValue: 0))
-			handlers.append(PathLikeHandler(method: method, regex: regex, handler: handler))
+			handlers.append(PathLikeHandler(method: method, regex: regex, waitForData: waitForData, handler: handler))
 		}
 		catch {
 			DLog("Failed to install handler because of invalid regex pattern: \(pattern)")
@@ -151,10 +148,12 @@ internal class CJHttpServerImpl: CJHttpServer {
 		let webPath = _wp.hasSuffix("/") ? _wp.substringToIndex(_wp.endIndex.predecessor()) : _wp
 		let fileManager = NSFileManager()
 		
-		self.addHandler(.Get, pathLike: "^\(webPath)/(.*)$") { values, request, response in
-			// DLog("values = \(values)")
+		self.addHandler(.Get, pathLike: "^\(webPath)/(.*)$", waitForData: false) { match in
+//		let request = match.request
+			var response = match.response
 			
-			let path = values.count == 2 ? values[1] : ""
+			// if the match was the base path with no additional subpaths, the match count will be 1
+			let path = match.values?.count == 2 ? match.values![1] : ""
 			
 			// prevent the user from escaping the base directory
 			if path.rangeOfString("..") != nil {
@@ -164,14 +163,10 @@ internal class CJHttpServerImpl: CJHttpServer {
 			}
 			
 			CJDispatchBackground() {
-				var response = response
-				
 				// assemble the file path
 				let fileName = path.stringByRemovingPercentEncoding ?? ""
 				let fileType = (fileName as NSString).pathExtension.lowercaseString
 				let filePath = localPath + fileName
-				
-				//DLog("filePath = \(filePath)")
 				
 				var isdir: ObjCBool = false
 				let exists = fileManager.fileExistsAtPath(filePath, isDirectory: &isdir)
@@ -233,6 +228,94 @@ internal class CJHttpServerImpl: CJHttpServer {
 				response.finish()
 			}
 		}
+	}
+	
+	private final func handleRequest(connection: CJHttpConnection, _ request: CJHttpServerRequest) {
+		var match: CJHttpServerHandlerMatch?
+		var handler: Handler?
+		let response = CJSwerve.httpResponseType.init(connection: connection, request: request)
+		
+		for _handler in handlers {
+			if let _match = _handler.matches(connection, request, response) {
+				match = _match
+				handler = _handler
+				break
+			}
+		}
+		
+		if let handler = handler, var match = match {
+			if request.method != .Get && handler.waitForData == true {
+				if let contentType = request.contentType {
+					if contentType == CJHttpContentType.UrlForm.rawValue {
+						match.request.contentHandler = { [weak self] value, done in self?.handleUrlFormData(match, request, value, done) }
+					}
+					else if contentType == CJHttpContentType.MultipartForm.rawValue {
+						match.request.contentHandler = { [weak self] value, done in self?.handleMultipartFormData(request, value, done) }
+					}
+					else {
+						match.request.contentHandler = { [weak self] value, done in self?.handleRawData(request, value, done) }
+					}
+				}
+				else {
+					match.request.contentHandler = { [weak self] value, done in self?.handleRawData(request, value, done) }
+				}
+				match.request.resume()
+			}
+			else {
+				match.handler(match)
+			}
+		}
+		else {
+			DLog("No handler match found; closing connection [\(request)]")
+			connection.close()
+		}
+	}
+	
+	///
+	/// URL encoded form data.
+	///
+	private final func handleUrlFormData(match: CJHttpServerHandlerMatch, _ request: CJHttpServerRequest, _ value: AnyObject?, _ done: Bool) {
+		var request = request
+		
+		if let values = value as? [String: AnyObject] {
+			if request.values != nil {
+				request.values! += values
+			}
+			else {
+				request.values = values
+			}
+		}
+		
+		if done == true {
+			request.contentHandler = nil
+			match.handler(match)
+		}
+	}
+	
+	///
+	/// Multipart form data.
+	///
+	private final func handleMultipartFormData(request: CJHttpServerRequest, _ value: AnyObject?, _ done: Bool) {
+//		if let value = value as? FormData {
+//			
+//		}
+//		
+//		if done == true {
+//			
+//		}
+	}
+	
+	///
+	/// Raw data.
+	///
+	private final func handleRawData(request: CJHttpServerRequest, _ value: AnyObject?, _ done: Bool) {
+//		if let value = value as? dispatch_data_t {
+//			
+//		}
+//		
+//		if done == true {
+//			
+//		}
 	}
 	
 }

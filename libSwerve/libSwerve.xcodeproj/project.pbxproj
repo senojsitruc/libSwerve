@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F92B811D1CA0FF66009865B3 /* url-form-test.html in Resources */ = {isa = PBXBuildFile; fileRef = F92B811C1CA0FF66009865B3 /* url-form-test.html */; };
 		F930CEE81C9A310C0051675B /* CJHexDump.c in Sources */ = {isa = PBXBuildFile; fileRef = F930CEE61C9A310C0051675B /* CJHexDump.c */; };
 		F930CEE91C9A310C0051675B /* CJHexDump.c in Sources */ = {isa = PBXBuildFile; fileRef = F930CEE61C9A310C0051675B /* CJHexDump.c */; };
 		F930CEEA1C9A310C0051675B /* CJHexDump.h in Headers */ = {isa = PBXBuildFile; fileRef = F930CEE71C9A310C0051675B /* CJHexDump.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -70,6 +71,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F92B811C1CA0FF66009865B3 /* url-form-test.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = "url-form-test.html"; path = "../../HTML Forms/url-form-test.html"; sourceTree = "<group>"; };
 		F930CEE61C9A310C0051675B /* CJHexDump.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = CJHexDump.c; sourceTree = "<group>"; };
 		F930CEE71C9A310C0051675B /* CJHexDump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJHexDump.h; sourceTree = "<group>"; };
 		F930CEEC1C9AE6E90051675B /* CJGlobal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CJGlobal.swift; sourceTree = "<group>"; };
@@ -105,6 +107,10 @@
 		F9BF679A1C9BD604004AB3EE /* OpenSSLCertificate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OpenSSLCertificate.m; path = Extern/Pulse/OpenSSLCertificate.m; sourceTree = "<group>"; };
 		F9BF679B1C9BD604004AB3EE /* SecCertificate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SecCertificate.swift; path = Extern/Pulse/SecCertificate.swift; sourceTree = "<group>"; };
 		F9BF679C1C9BD604004AB3EE /* SecIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SecIdentity.swift; path = Extern/Pulse/SecIdentity.swift; sourceTree = "<group>"; };
+		F9FF9AE11CA020BD0061E5A6 /* multi-file-test.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = "multi-file-test.html"; path = "../../HTML Forms/multi-file-test.html"; sourceTree = "<group>"; };
+		F9FF9AE21CA021B90061E5A6 /* test-file-1.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "test-file-1.txt"; path = "../../HTML Forms/test-file-1.txt"; sourceTree = "<group>"; };
+		F9FF9AE61CA051240061E5A6 /* test-file-2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "test-file-2.txt"; path = "../../HTML Forms/test-file-2.txt"; sourceTree = "<group>"; };
+		F9FF9AE71CA051240061E5A6 /* test-file-3.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "test-file-3.txt"; path = "../../HTML Forms/test-file-3.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +218,7 @@
 		F98212A81C989EAC0086F948 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F9FF9AE31CA027810061E5A6 /* HTML Forms */,
 				F94925A21C9D57A4009BD380 /* README.md */,
 				F98212751C98965D0086F948 /* libSwerve.h */,
 				F98212771C98965D0086F948 /* Info.plist */,
@@ -270,6 +277,18 @@
 				F9BF67961C9BD5A5004AB3EE /* NSData+SHA256Digest.m */,
 			);
 			name = Pulse;
+			sourceTree = "<group>";
+		};
+		F9FF9AE31CA027810061E5A6 /* HTML Forms */ = {
+			isa = PBXGroup;
+			children = (
+				F92B811C1CA0FF66009865B3 /* url-form-test.html */,
+				F9FF9AE11CA020BD0061E5A6 /* multi-file-test.html */,
+				F9FF9AE21CA021B90061E5A6 /* test-file-1.txt */,
+				F9FF9AE61CA051240061E5A6 /* test-file-2.txt */,
+				F9FF9AE71CA051240061E5A6 /* test-file-3.txt */,
+			);
+			name = "HTML Forms";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -391,6 +410,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F92B811D1CA0FF66009865B3 /* url-form-test.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

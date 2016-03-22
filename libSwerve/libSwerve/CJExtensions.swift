@@ -77,6 +77,85 @@ extension dispatch_data_t {
 	}
 	
 	///
+	///
+	///
+	internal func rangeOfByte(byte: UInt8, after: Int = 0, maxLength: Int = 0) -> NSRange? {
+		var range: NSRange?
+		
+		dispatch_data_apply(self) { region, offset, _buffer, _size in
+			// we haven't reached the specified offset yet
+			if after > 0 && offset + _size < after { return true }
+			
+			let size: Int
+			let buffer: UnsafePointer<UInt8>
+			
+			// we need a UInt8 pointer and we need to advance to the designated offset if the designated
+			// offset falls within this region (instead of a previous region)
+			if after > offset {
+				buffer = UnsafePointer<UInt8>(_buffer).advancedBy(after - offset)
+				size = _size - (after - offset)
+			}
+			else {
+				buffer = UnsafePointer<UInt8>(_buffer)
+				size = _size
+			}
+			
+			// enumerate the bytes of the region. if we find a \r, check for a subsequent \n. if a \r
+			for i in 0..<size {
+				if buffer[i] == byte {
+					range = NSMakeRange(offset + i + (after - offset), 1)
+					return false
+				}
+			}
+			
+			return true
+		}
+		
+		return range
+	}
+	
+	///
+	/// Returns a string spanning the given range of this data.
+	///
+	internal func stringWithRange(range: NSRange) -> String? {
+		var string: String = ""
+		var length = 0
+		
+		dispatch_data_apply(self) { region, offset, _buffer, _size in
+			// we haven't reached the specified offset yet
+			if range.location > 0 && offset + _size < range.location { return true }
+			
+			var size: Int
+			let buffer: UnsafePointer<UInt8>
+			
+			// we need a UInt8 pointer and we need to advance to the designated offset if the designated
+			// offset falls within this region (instead of a previous region)
+			if range.location > offset {
+				buffer = UnsafePointer<UInt8>(_buffer).advancedBy(range.location - offset)
+				size = _size - (range.location - offset)
+			}
+			else {
+				buffer = UnsafePointer<UInt8>(_buffer)
+				size = _size
+			}
+			
+			// don't get more data than was asked for
+			if size > length + range.length {
+				size = range.length - length
+			}
+			
+			// get the string and update the length
+			string += String(data: NSData(bytes: buffer, length: size), encoding: NSUTF8StringEncoding) ?? ""
+			length += size
+			
+			// continue if we still need more data
+			return length < range.length
+		}
+		
+		return string
+	}
+	
+	///
 	/// Matches on \r or \n or \r\n
 	///
 	internal func rangeOfNewline(offset _offset: Int = 0) -> NSRange? {
@@ -90,7 +169,7 @@ extension dispatch_data_t {
 			let size: Int
 			let buffer: UnsafePointer<UInt8>
 			
-			// we need a UInt8 pointer and we need to advance to the designed offset if the designated
+			// we need a UInt8 pointer and we need to advance to the designated offset if the designated
 			// offset falls within this region (instead of a previous region)
 			if _offset > offset {
 				buffer = UnsafePointer<UInt8>(_buffer).advancedBy(_offset - offset)
@@ -143,8 +222,11 @@ extension dispatch_data_t {
 		return range
 	}
 	
-	internal func subrangeFromIndex(index: Int) -> dispatch_data_t {
-		return dispatch_data_create_subrange(self, index, self.length - index)
+	///
+	///
+	///
+	internal func subrangeFromIndex(index: Int, length: Int = 0) -> dispatch_data_t {
+		return dispatch_data_create_subrange(self, index, length > 0 ? length : (self.length - index))
 	}
 	
 }
@@ -152,6 +234,8 @@ extension dispatch_data_t {
 internal func +(lhs: dispatch_data_t, rhs: dispatch_data_t) -> dispatch_data_t {
 	return dispatch_data_create_concat(lhs, rhs)
 }
+
+internal func +=<K, V> (inout left: [K : V], right: [K : V]) { for (k, v) in right { left[k] = v } }
 
 extension NSFileManager {
 	

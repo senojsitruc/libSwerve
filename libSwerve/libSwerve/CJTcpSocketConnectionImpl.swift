@@ -27,6 +27,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	private let queue = dispatch_queue_create("us.curtisjones.libSwerve.CJTcpServerImpl.queue", DISPATCH_QUEUE_SERIAL)
 	private let group = dispatch_group_create()
 	private let pauser = dispatch_group_create()
+	private var pauseCount: Int32 = 0
 	private var bytesIn: size_t = 0
 	private var bytesOut: size_t = 0
 	private var lastReadTime: dispatch_time_t = 0
@@ -67,7 +68,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			let currentTime = dispatch_time(DISPATCH_TIME_NOW, 0)
 			let lastReadTime = self?.lastReadTime ?? 0
 			
-			// if there's data, process it. otherwise, if the connection has been idlea too long, close it.
+			// if there's data, process it. otherwise, if the connection has been idle too long, close it.
 			if data != nil && dispatch_data_get_size(data) != 0 {
 				self?.handleIncoming(done: done, data: data, error: error)
 			}
@@ -79,8 +80,10 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			self?.lastReadTime = currentTime
 			
 			if done == true || error != 0 {
+				if error != 0 {
+					self?.log("Error while reading. \(error) = \(cjstrerror(error))")
+				}
 				self?.close()
-				self?.log("Error while reading. \(error) = \(cjstrerror(error))")
 			}
 			
 			dispatch_group_leave(group)
@@ -100,7 +103,6 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 			Darwin.close(sockfd)
 			
 			self.closeHandler?(self)
-			
 			self.closeHandler = nil
 			self.context = nil
 			
@@ -110,15 +112,15 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 	
 	func pause() {
 		dispatch_group_enter(pauser)
+		OSAtomicIncrement32(&pauseCount)
 	}
 	
 	func resume() {
 		dispatch_group_leave(pauser)
+		OSAtomicDecrement32(&pauseCount)
 	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int, completionHandler: ((Bool) -> Void)?) {
-		//log("Writing \(size) bytes.")
-		
 		if stop != 0 {
 			log("Cannot write to a closed connection.")
 			completionHandler?(false)
@@ -161,7 +163,7 @@ internal class CJTcpSocketConnectionImpl: CJSocketConnection {
 		}
 	}
 	
-	private final func log(string: String) {
+	final func log(string: String) {
 		DLog("\(remoteAddr):\(remotePort) [sockfd = \(sockfd)] :: " + string)
 	}
 	

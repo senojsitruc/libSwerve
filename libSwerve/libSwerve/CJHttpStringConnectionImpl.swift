@@ -70,7 +70,7 @@ internal class CJHttpStringConnectionImpl: CJHttpConnection {
 					// create a new request object with the 1st line of the request. when the request is
 					// finished, the completion handler were update the group. we do not allow requests to
 					// process concurrently, but we do queue them up so they don't sit on the socket
-					_self.request = CJSwerve.httpRequestType.init(methodName: parts[0], path: parts[1], version: parts[2]) {
+					_self.request = CJSwerve.httpRequestType.init(methodName: parts[0], path: parts[1], version: parts[2], connection: _self) {
 						dispatch_group_leave(group)
 					}
 					
@@ -136,6 +136,10 @@ internal class CJHttpStringConnectionImpl: CJHttpConnection {
 	
 	func close() {
 		connection.close()
+	}
+	
+	func resume() {
+		connection.resume()
 	}
 	
 	func write(bytes: UnsafePointer<Void>, size: Int) {
